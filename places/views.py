@@ -1,8 +1,12 @@
+from django.db.models import Max, Min, Count, Sum, Avg
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 
-from django.http import HttpResponse
-
 from .models import Country, City, Stadium
+
+from games.models import Game
+from places.models import Stadium
+from teams.models import Team
 
 
 
@@ -45,6 +49,47 @@ def country_detail(request, slug):
                       "places/country_detail.html",
                       context)
 
+
+
+
+def state_detail(request, slug):
+        """
+        """
+
+        state = get_object_or_404(State, slug=slug)
+        births = Bio.objects.filter(birthplace__state=state)
+        stadiums = Stadium.objects.filter(city__state=state)
+        games = Game.objects.exclude(city=None).filter(city__state=state)
+        
+        context = {
+                'state': state,
+                'births': births,
+                'stadiums': stadiums,
+                'games': games,
+                }
+        return render_to_response("places/state_detail.html",
+                                  context,
+                                  context_instance=RequestContext(request))
+
+
+
+
+def city_detail(request, slug):
+        """
+        """
+
+        city = get_object_or_404(City, slug=slug)
+
+        context = {
+                'city': city,
+                'teams': Team.objects.filter(city=city),
+                'games': Game.objects.filter(city=city),
+                'stadiums': city.stadium_set.annotate(game_count=Count('game')).annotate(total_attendance=Sum('game__attendance')).order_by('-game_count')
+                }
+
+        return render(request, 
+                      "places/city_detail.html",
+                      context)
 
 
 

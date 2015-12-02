@@ -125,6 +125,10 @@ class Team(models.Model):
     class Meta:
         ordering = ('short_name',)
 
+    def __str__(self):
+        return self.short_name
+
+
 
 
 
