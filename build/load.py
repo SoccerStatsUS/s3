@@ -17,7 +17,7 @@ django.setup()
 connection = pymongo.Connection()
 soccer_db = connection.soccer
 
-from competitions.models import Competition, CompetitionRelationship
+from competitions.models import Competition, CompetitionRelationship, SuperSeason, Season
 from organizations.models import Confederation
 from places.models import Country, State, City
 from sources.models import Source, SourceUrl
@@ -52,10 +52,11 @@ def load1():
     # Simple sport data
 
     load_competitions()
+    load_seasons()
     load_teams()
 
     return
-    load_seasons()
+
 
     load_bios()
     load_stadiums()
@@ -190,6 +191,34 @@ def load_competitions():
 
         a = Competition.objects.get(name=d['after'])
         CompetitionRelationship.objects.create(before=b, after=a)
+
+
+
+
+@transaction.atomic
+def load_seasons():
+    print("loading seasons")
+    # This appears to just be loading superseasons...
+
+    #competition_getter = make_competition_getter()
+
+    l = []
+
+    for s in soccer_db.seasons.find():
+        #s.pop('_id')
+        #competition_id = competition_getter(s['competition'])
+        l.append({
+                'name': s['name'],
+                'slug': slugify(s['name']),
+                #'slug': slugify(s['season']),
+                #'competition_id': competition_id,
+                'order': s['order'],
+                'order2': s['order2'],
+                })
+
+    for ss in l:
+        SuperSeason.objects.create(**ss)
+
 
 
 
