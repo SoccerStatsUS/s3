@@ -22,5 +22,5 @@ urlpatterns = [
     url(r'^bios/', include('bios.urls')),
     url(r'^places/', include('places.urls')),
     url(r'^organizations/', include('organizations.urls')),
-    #url(r'^admin/', admin.site.urls),
+    url(r'^sources/', include('sources.urls')),
 ]

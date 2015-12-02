@@ -2,6 +2,8 @@ import os
 import sys
 import pymongo
 
+from collections import defaultdict
+
 from django.db import transaction
 from django.template.defaultfilters import slugify
 
@@ -17,6 +19,7 @@ soccer_db = connection.soccer
 
 from organizations.models import Confederation
 from places.models import Country, State, City
+from sources.models import Source, SourceUrl
 
 from getters import *
 
@@ -39,7 +42,7 @@ def load1():
     #generate_mongo_indexes()
 
     # Non-game data.
-    #load_sources()
+    load_sources()
     load_confederations()
     load_places()
 

@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'tags',
 
+    'sources',
     'bios',
     'competitions',
     'organizations',
