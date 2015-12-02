@@ -9,8 +9,8 @@ createdb soccerstats_build --owner=soccerstats
 createdb soccerstats_backup --owner=soccerstats
 createdb soccerstats --owner=soccerstats
 createdb soccerstats_dev --owner=soccerstats
-#python3 manage.py migrate --noinput --settings=build_settings
-#python3 build/load.py 1
+python3 manage.py migrate --noinput --settings=build_settings
+python3 build/load.py 1
 #python3 build/load.py 2
 #python3 build/load.py 3
 #python3 build/load.py 4

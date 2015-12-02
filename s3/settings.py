@@ -31,6 +31,10 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'bios',
+    'organizations',
+    'places',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -76,8 +80,12 @@ WSGI_APPLICATION = 's3.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'soccerstats_dev',
+        'USER': 'soccerstats',
+        'PASSWORD': 'ymctas',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
