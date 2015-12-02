@@ -1,5 +1,7 @@
 import pymongo
 
+from places.models import Country, State, City
+
 connection = pymongo.Connection()
 soccer_db = connection.soccer
 
@@ -70,3 +72,29 @@ def make_city_pre_getter():
 
 
     return get_dict
+
+
+
+def make_city_getter():
+    """
+    
+    """
+
+    cg = make_city_pre_getter()
+    
+    def get_city(s):
+        c = cg(s)
+
+        state = country = None
+        if c['state']:
+            state = State.objects.get(name=c['state'])
+
+        if c['country']:
+            country = Country.objects.get(name=c['country'])
+        
+        try:
+            return City.objects.get(name=c['name'], state=state, country=country)
+        except:
+            return City.objects.create(name=c['name'], state=state, country=country)
+
+    return get_city

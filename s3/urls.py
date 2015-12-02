@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^places/', include('places.urls')),
     url(r'^organizations/', include('organizations.urls')),
     url(r'^sources/', include('sources.urls')),
+    url(r'^teams/', include('teams.urls')),
 ]

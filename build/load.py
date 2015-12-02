@@ -1,3 +1,4 @@
+import datetime
 import os
 import sys
 import pymongo
@@ -20,6 +21,7 @@ from competitions.models import Competition, CompetitionRelationship
 from organizations.models import Confederation
 from places.models import Country, State, City
 from sources.models import Source, SourceUrl
+from teams.models import Team, TeamAlias
 
 from getters import *
 
@@ -188,6 +190,70 @@ def load_competitions():
 
         a = Competition.objects.get(name=d['after'])
         CompetitionRelationship.objects.create(before=b, after=a)
+
+
+
+
+#@timer
+@transaction.atomic
+def load_teams():
+    print("loading {} teams".format(soccer_db.teams.count()))
+
+    cg = make_city_getter()
+    names = set()
+
+    for team in soccer_db.teams.find():
+        team.pop('_id')
+
+        founded = city = dissolved =None
+
+        slug = slugify(team['name'])
+        short_name = team.get('short_name') or team['name']
+
+        if type(team['founded']) == int:
+            try:
+                founded = datetime.datetime(team['founded'], 1, 1)
+            except:
+                print("founded out of range %s" % team)
+
+        if team['city']:
+            city = cg(team['city'])
+
+        if type(team['dissolved']) == int:
+            dissolved = datetime.datetime(team['dissolved'] + 1, 1, 1)
+            dissolved = dissolved - datetime.timedelta(days=1)
+
+        if team['name'] not in names:
+
+            if team['name'] == 'New York Giants':
+                import pdb; pdb.set_trace()
+
+            names.add(team['name'])
+            Team.objects.create(**{
+                    'name': team['name'],
+                    'short_name': short_name,
+                    'slug': slug,
+                    'founded': founded,
+                    'dissolved': dissolved,
+                    'city': city,
+                    'international': team.get('international', False),
+                    })
+        else:
+            print("duplicate team name")
+            print(team)
+
+
+    for alias in soccer_db.name_maps.find():
+        alias.pop('_id')
+        t = Team.objects.find(name=alias['from_name'], create=True)
+
+        TeamAlias.objects.create(**{
+                'team': t,
+                'name': alias['to_name'],
+                'start': alias['start'],
+                'end': alias['end'],
+                })
+
         
 
 

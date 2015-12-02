@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'competitions',
     'organizations',
     'places',
+    'teams',
 
 
     'django.contrib.admin',
