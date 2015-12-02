@@ -9,4 +9,10 @@ urlpatterns = [
         views.country_detail,
         name='country_detail'),
 
+
+    url(r'^stadiums/(?P<slug>[a-z0-9-]+)/$',                       
+        views.stadium_detail,
+        name='stadium_detail'),
+
+
 ]

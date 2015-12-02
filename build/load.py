@@ -5,7 +5,7 @@ import pymongo
 
 from collections import defaultdict
 
-#from utils import insert_sql, timer
+from utils import insert_sql, timer
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'build_settings'
 import django
@@ -63,6 +63,10 @@ def load1():
 
 
     #load_salaries()
+
+    # Complex game data
+    load_games()
+
 
 
 
@@ -399,6 +403,213 @@ def load_bios():
     insert_sql("images_image", images)
     """
 
+
+
+
+#@timer
+@transaction.atomic
+def load_games():
+    print("\n loading {} games\n".format(soccer_db.games.count()))
+
+    stadium_getter = make_stadium_getter()
+    team_getter = make_team_getter()
+    competition_getter = make_competition_getter()    
+    source_getter = make_source_getter()
+    bio_getter = make_bio_getter()
+
+    city_getter = make_city_getter()
+    country_getter = make_country_getter()
+
+    season_getter = make_season_getter()
+
+    games = []
+    game_sources = []
+
+    for game in soccer_db.games.find().sort('date', 1):
+
+        # Apply stadium / state / country information.
+        
+        stadium_id = city_id = country_id = None
+        if game.get('stadium'):
+            stadium_id = stadium_getter(game['stadium'])
+            s = Stadium.objects.get(id=stadium_id)
+            if s.city:
+                city_id = s.city.id
+            else:
+                city_id = None
+
+        elif game.get('city'):
+            city_id = city_getter(game['city']).id
+
+        elif game.get('location'):
+
+            country_id = country_getter(game['location'])
+            if country_id is None:
+                city_id = city_getter(game['location']).id
+
+        competition_id = competition_getter(game['competition'])
+        #game['competition'] = Competition.objects.get(id=game['competition'])
+
+        #season_id = Season.objects.find(game['season'], competition_id).id # this!!
+        season_id = season_getter(game['season'], competition_id)
+
+        if game['season'] is None:
+            import pdb; pdb.set_trace()
+
+        team1_id = team_getter(game['team1'])
+        team2_id = team_getter(game['team2'])
+
+        home_team_id = None
+        if game.get('home_team'):
+            home_team_id = team_getter(game['home_team'])
+
+        goals = (game['team1_score'] or 0) + (game['team2_score'] or 0)
+
+        referee_id = linesman1_id = linesman2_id = linesman3_id = None
+        if game['referee']:
+            referee_id = bio_getter(game['referee'])
+
+        if game.get('linesman1'):
+            linesman1_id = bio_getter(game['linesman1'])
+
+        if game.get('linesman2'):
+            linesman2_id = bio_getter(game['linesman2'])
+
+        if game.get('linesman3'):
+            linesman3_id = bio_getter(game['linesman3'])
+
+
+        if game.get('sources'):
+            sources = sorted(set(game.get('sources')))
+        elif game.get('source'):
+            sources = [game['source']]
+        else:
+            sources = []
+
+        
+        for source in sources:
+            if source.strip() == '':
+                continue
+            elif source.startswith('http'):
+                source_url = source
+            else:
+                source_url = ''
+            source_id = source_getter(source)
+            t = (game['date'], team1_id, source_id, source_url)
+            game_sources.append(t)
+
+        result_unknown = game.get('result_unknown') or False
+        not_played = game.get('not_played') or False
+        forfeit = game.get('forfeit') or False
+        minigame = game.get('minigame') or False
+        indoor = game.get('indoor') or False
+
+        minutes = game.get('minutes') or 90
+
+        neutral = game.get('neutral') or False
+        attendance = game.get('attendance')
+
+        stage = game.get('stage') or ''
+        group = game.get('group') or ''
+        rnd = game.get('round') or ''
+
+
+        # There are lots of problems with the NASL games, 
+        # And probably ASL as well. Need to spend a couple
+        # of hours repairing those schedules.
+
+        if game['shootout_winner']:
+            shootout_winner = team_getter(game['shootout_winner'])
+        else:
+            shootout_winner = None
+
+        location = game.get('location', '')
+
+        location = location or ''
+
+
+        if 'gid' not in game:
+            game['gid'] = get_id_by_time()
+
+
+        games.append({
+                'date': game['date'],
+                'has_date': bool(game['date']),
+
+                'team1_id': team1_id,
+                'team1_original_name': game['team1_original_name'],
+                'team2_id': team2_id,
+                'team2_original_name': game['team2_original_name'],
+
+                'team1_score': game['team1_score'],
+                'official_team1_score': game.get('official_team1_score'),
+                'team2_score': game['team2_score'],
+                'official_team2_score': game.get('official_team2_score'),
+
+                'shootout_winner_id': shootout_winner,
+
+                'team1_result': game['team1_result'],
+                'team2_result': game['team2_result'],
+
+                'result_unknown': result_unknown,
+                'not_played': not_played,
+                'forfeit': forfeit,
+
+                'goals': goals,
+                'minigame': minigame,
+                'indoor': indoor,
+
+                'minutes': minutes,
+                'competition_id': competition_id,
+                'season_id': season_id,
+                'stage': stage,
+                'group': group,
+                'round': rnd,
+
+
+                'home_team_id': home_team_id,
+                'neutral': neutral,
+
+                'stadium_id': stadium_id,
+                'city_id': city_id,
+                'country_id': country_id,
+                'location': location,
+                'notes': game.get('notes', ''),
+                'video': game.get('video', ''),
+                'attendance': attendance,
+                
+                'referee_id': referee_id,
+                'linesman1_id': linesman1_id,
+                'linesman2_id': linesman2_id,
+                'linesman3_id': linesman3_id,
+
+                'merges': game['merges'],
+                'gid': game['gid'],
+                })
+
+
+    print("Inserting {} games results.".format(len(games)))
+    # Broke on massive attendance. 
+    # Watch out for crazy integer values.
+    insert_sql("games_game", games)
+
+    print("Inserting games sources.")
+    game_getter = make_game_getter()
+    
+    l = []
+    for date, team_id, source_id, source_url in game_sources:
+
+        # Don't call game_getter without date. Need to give games unique id's.
+        if date:
+            game_id = game_getter(team_id, date)
+            if game_id:
+                l.append({
+                        'game_id': game_id,
+                        'source_id': source_id,
+                        'source_url': source_url,
+                        })
+
+    insert_sql("games_gamesource", l)
 
 
 

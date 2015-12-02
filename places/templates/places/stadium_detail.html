@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}{{ stadium }}{% endblock %}
+
+{# {% load standings %} #}
+{# {% load games %} #}
+
+{% block content %}
+
+<div id="stadium_block">
+
+<h3>{{ stadium.name }}</h3>
+
+</div>
+
+
+
+<div id="tab_block">
+<ul id="tabs"></ul>
+</div>
+
+<div id="tab_wrapper">
+
+
+
+<div tab="summary">
+
+{% if stadium.address %}
+<div><a href="{% url 'city_detail' stadium.city.slug %}">{{ stadium.address }}, {{ stadium.city }}</a></div>
+{% else %}
+{% if stadium.city %}
+<div><a href="{% url 'city_detail' stadium.city.slug %}">{{ stadium.city }}</a></div>
+{% endif %}
+{% endif %}
+
+
+{% if stadium.opened %}
+<div>Opened: <a href="{% url 'date_detail' stadium.opened.year stadium.opened.month stadium.opened.day %}">{{ stadium.opened }}</a></div>
+{% else %}
+{% if stadium.year_opened %}
+<div>Opened: <a href="{% url 'year_detail' stadium.year_opened %}">{{ stadium.year_opened }}</a></h4>
+{% endif %}
+{% endif %}
+
+{% if stadium.closed %}
+<div>Closed: <a href="{% url 'date_detail' stadium.closed.year stadium.closed.month stadium.closed.day %}">{{ stadium.closed }}</a></div>
+{% else %}
+{% if stadium.year_closed %}
+<div>Closed: <a href="{% url 'year_detail' stadium.year_closed %}">{{ stadium.year_closed }}</a></div>
+{% endif %}
+{% endif %}
+
+
+{% if stadium.capacity %}
+<div>Capacity: {{ stadium.capacity }}</div>
+{% endif %}
+
+{% if stadium.cost %}
+<div>Cost: ${{ stadium.cost }}</div>
+{% endif %}
+
+{% if stadium.architect %}
+<div>Architect: <a href="{% url 'person_detail' stadium.architect.slug %}">{{ stadium.architect }}</a></div>
+{% endif %}
+
+{% if attendance_game_count %}
+<div>Average attendance: {{ average_attendance|floatformat }} ({{ attendance_game_count }} games)</div>
+{% endif %}
+</div>
+
+
+
+<div tab="standings">
+
+{# {% standings_table standings 'competition,season,pts,ppg' %} #}
+
+</div>
+
+<div tab="games">
+
+{# {% games_table recent_games 'stadium' %} #}
+
+</div>
+
+
+</div>
+
+{% endblock %}

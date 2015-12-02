@@ -1,6 +1,21 @@
 from django.db import models
 
 
+class SourceManager(models.Manager):
+
+    def source_dict(self):
+        """
+        Returns a dict mapping a name to a source id.
+        """
+        d = {}
+        for e in self.get_queryset():
+            d[e.name] = e.id
+            for su in e.sourceurl_set.all():
+                d[su.url] = e.id
+
+        return d
+
+
 
 class Source(models.Model):
     """
@@ -17,7 +32,7 @@ class Source(models.Model):
     stats = models.IntegerField(null=True)
     total = models.IntegerField(null=True)
 
-    #objects = SourceManager()
+    objects = SourceManager()
 
 
     class Meta:

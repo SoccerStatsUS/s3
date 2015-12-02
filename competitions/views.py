@@ -1,7 +1,11 @@
+from collections import defaultdict, Counter
+
 from django.shortcuts import render, get_object_or_404
 
 from .forms import CompetitionForm
 from .models import Competition, SuperSeason, Season
+
+
 
 #@cache_page(60 * 60 * 12)
 def competition_index(request):

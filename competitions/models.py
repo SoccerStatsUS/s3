@@ -15,6 +15,27 @@ class AbstractCompetition(models.Model):
 
 
 
+class CompetitionManager(models.Manager):
+
+    def find(self, name):
+        try:
+            return Competition.objects.get(name=name)
+        except:
+            print("Creating competition {}".format(name))
+            return Competition.objects.create(name=name)
+
+
+    def as_dict(self):
+        """
+        Dict mapping names to bio id's.
+        """
+        d = {}
+        for e in self.get_queryset():
+            d[e.name] = e.id
+        return d
+
+
+
 
 
 
@@ -41,8 +62,15 @@ class Competition(AbstractCompetition):
     
     #international = models.BooleanField()
 
+    objects = CompetitionManager()
+
     class Meta:
         ordering = ("name",)
+
+
+    def __str__(self):
+        return self.name
+
 
 
     def save(self, *args, **kwargs):
@@ -96,6 +124,38 @@ class SuperSeason(models.Model):
 
 
 
+class SeasonManager(models.Manager):
+
+    def find(self, name, competition):
+        try:
+            return Season.objects.get(name=name, competition=competition)
+        except:
+            #if type(competition) in (int, str, unicode):
+            if type(competition) in (int, str):
+                competition = Competition.objects.get(id=competition)
+            
+            try:
+                ss = SuperSeason.objects.get(name=name)
+            except:
+                print("Creating Super Season %s" % name)
+                if name in (None, ''):
+                    import pdb; pdb.set_trace()
+                ss = SuperSeason.objects.create(name=name, order=-1, order2=-1)
+
+            return Season.objects.create(name=name, competition=competition, order=ss.order, super_season=ss)
+
+    def as_dict(self):
+        """
+        Dict mapping names to bio id's.
+        """
+        d = {}
+        for name, competition, sid in self.get_queryset().values_list('name', 'competition', 'id'):
+            d[(name, competition)] = sid
+        return d
+
+
+
+
 class Season(AbstractCompetition):
     """
     A season of a competition.
@@ -112,7 +172,7 @@ class Season(AbstractCompetition):
     competition = models.ForeignKey(Competition, null=True)
     competition_original_name = models.CharField(max_length=255)
 
-    #objects = SeasonManager()
+    objects = SeasonManager()
 
     minutes = models.IntegerField(null=True, blank=True)
     minutes_with_age = models.IntegerField(null=True, blank=True)
@@ -125,4 +185,52 @@ class Season(AbstractCompetition):
         #ordering = ("order", "name", "competition")
         ordering = ("order", "super_season__order2", "competition")
         #ordering = ("super_season", )
+
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+            
+        super(Season, self).save(*args, **kwargs)
+
+
+
+
+    def previous_game(self, game):
+        # This doesn't really work. 
+
+        from games.models import Game
+
+        if game.date is None:
+            return None
+
+        same_day_games = Game.objects.filter(season=self, date=game.date, id__lt=game.id).order_by('-id')
+        if same_day_games.exists():
+            return same_day_games[0]
+
+        else:
+            games = Game.objects.filter(season=self, date__lt=game.date).order_by('-date', '-id')
+            if games.exists():
+                return games[0]
+            else:
+                return None
+
+    
+    def next_game(self, game):
+        from games.models import Game
+
+        if game.date is None:
+            return None
+
+        same_day_games = Game.objects.filter(season=self, date=game.date, id__gt=game.id).order_by('id')
+        if same_day_games.exists():
+            return same_day_games[0]
+        else:
+            games = Game.objects.filter(season=self, date__gt=game.date).order_by('date', 'id')
+            if games.exists():
+                return games[0]
+            else:
+                return None
+
+
 

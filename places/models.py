@@ -1,7 +1,40 @@
 from django.db import models
+from django.template.defaultfilters import slugify
 
 from organizations.models import Confederation
 from bios.models import Bio
+
+
+
+
+class CountryManager(models.Manager):
+
+    def find(self, s):
+
+        try:
+            return Country.objects.get(name=s)
+        except:
+            return Country.objects.create(name=s)
+
+
+    def country_dict(self):
+        """
+        A dict mapping a team's name and short name to an id.
+        """
+        d = {}
+        for e in self.get_queryset():
+            d[e.name] = e.id
+        return d
+
+    def id_dict(self):
+        """
+        A dict mapping a team's name and short name to an id.
+        """
+        d = {}
+        for e in self.get_queryset():
+            d[e.id] = e.name
+        return d
+
 
 
 class Country(models.Model):
@@ -15,6 +48,8 @@ class Country(models.Model):
     confederation = models.ForeignKey(Confederation, null=True)
 
     subconfederation = models.CharField(max_length=15)
+
+    objects = CountryManager()
 
     def __str__(self):
         return self.name

@@ -45,3 +45,30 @@ def country_detail(request, slug):
                       "places/country_detail.html",
                       context)
 
+
+
+
+def stadium_detail(request, slug):
+        """
+        Stadium detail view.
+        """
+
+        stadium = get_object_or_404(Stadium, slug=slug)
+
+        # Compute average attendance.
+        games = stadium.game_set.exclude(attendance=None)
+        attendance_game_count = games.count()
+        #average_attendance = games.aggregate(Avg('attendance'))['attendance__avg']
+        #standings = StadiumStanding.objects.filter(stadium=stadium).order_by('-games')
+
+        context = {
+                'stadium': stadium,
+                #'average_attendance': average_attendance,
+                'attendance_game_count': attendance_game_count,
+                #'standings': standings,
+                'recent_games': stadium.game_set.all()[:25],
+                }
+
+        return render(request, 
+                      "places/stadium_detail.html",
+                      context)
