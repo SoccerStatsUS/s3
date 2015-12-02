@@ -15,6 +15,13 @@ class Country(models.Model):
 
     subconfederation = models.CharField(max_length=15)
 
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ('name',)
+
+
 
 class State(models.Model):
     name = models.CharField(max_length=255)
