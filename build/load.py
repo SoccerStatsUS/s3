@@ -5,21 +5,25 @@ import pymongo
 
 from collections import defaultdict
 
+#from utils import insert_sql, timer
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'build_settings'
+import django
+django.setup()
+
+from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.template.defaultfilters import slugify
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'build_settings'
-
-import django
-django.setup()
 
 
 connection = pymongo.Connection()
 soccer_db = connection.soccer
 
+from bios.models import Bio
 from competitions.models import Competition, CompetitionRelationship, SuperSeason, Season
 from organizations.models import Confederation
-from places.models import Country, State, City
+from places.models import Country, State, City, Stadium
 from sources.models import Source, SourceUrl
 from teams.models import Team, TeamAlias
 
@@ -54,14 +58,11 @@ def load1():
     load_competitions()
     load_seasons()
     load_teams()
-
-    return
-
-
-    load_bios()
     load_stadiums()
+    load_bios()
 
-    load_salaries()
+
+    #load_salaries()
 
 
 
@@ -283,7 +284,120 @@ def load_teams():
                 'end': alias['end'],
                 })
 
+
+
+
+#@timer
+@transaction.atomic
+def load_stadiums():
+    print("loading stadiums")
+
+    cg = make_city_getter()
+
+    for stadium in soccer_db.stadiums.find():
+        stadium.pop('_id')
+
+        stadium['slug'] = slugify(stadium['name'])
+
+        stadium['city'] = cg(stadium['location'])
         
+        if 'renovations' in stadium:
+            stadium.pop('renovations')
+        if 'source' in stadium:
+            stadium.pop('source')
+        
+        if stadium['architect']:
+            stadium['architect'] = Bio.objects.find(stadium['architect'])
+
+        if 'opened' in stadium and type(stadium['opened']) == int:
+            stadium['year_opened'] = stadium.pop('opened')
+
+        if 'closed' in stadium and type(stadium['closed']) == int:
+            stadium['year_closed'] = stadium.pop('closed')
+
+        try:
+            Stadium.objects.create(**stadium)
+        except:
+            import pdb; pdb.set_trace()
+        x = 5
+        
+
+
+
+#@timer
+@transaction.atomic
+def load_bios():
+    print("loading bios")
+
+    cg = make_city_getter()
+
+
+    # Find which names are used so we can only load these bios.
+    # Huh? This is unnecessary.
+    #fields = [('lineups', 'name'), ('goals', 'goal'), ('stats', 'name'), ('awards', 'recipient'), ('picks', 'text')]
+    #names = set()
+
+    # Add names to names field where they have been used.
+    #for coll, key in fields:
+    #    names.update([e[key] for e in soccer_db[coll].find()])
+
+    # Load bios.
+    for bio in soccer_db.bios.find().sort('name', 1):
+
+        #if bio['name'] not in names:
+            #print("Skipping %s" % bio['name'])
+        #    continue
+
+        bio.pop('_id')
+
+        if not bio['name']:
+            import pdb; pdb.set_trace()
+            print("NO BIO: %s" % str(bio))
+            continue
+
+        # nationality should be many-to-many
+        if 'nationality' in bio:
+            bio.pop('nationality')
+
+        bd = {}
+
+        for key in 'name', 'height', 'birthdate', 'height', 'weight':
+            if key in bio:
+                bd[key] = bio[key] or None
+
+        if bio.get('birthplace'):
+            bd['birthplace'] = cg(bio['birthplace'])
+
+        if bio.get('deathplace'):
+            bd['deathplace'] = cg(bio['deathplace'])
+
+        """
+        # Having unexpected problems here...
+        bd['hall_of_fame'] = bio.get('hall_of_fame')
+        if bd['hall_of_fame'] not in (True, False):
+            bd['hall_of_fame'] = False
+        """
+
+        Bio.objects.create(**bd)
+
+    bio_getter = make_bio_getter()
+    bio_ct_id = ContentType.objects.get(app_label='bios', model='bio').id
+
+    """
+    images = []
+    for bio in soccer_db.bios.find().sort('name', 1):
+        if bio.get('img'):
+            bid = bio_getter(bio['name'])
+            fn = bio['img'].rsplit('/')[-1]
+            
+            images.append({
+                    'filename': fn,
+                    'content_type_id': bio_ct_id,
+                    'object_id': bid,
+                    })
+
+    insert_sql("images_image", images)
+    """
 
 
 
@@ -302,3 +416,4 @@ if __name__ == "__main__":
 
     else:
         raise
+

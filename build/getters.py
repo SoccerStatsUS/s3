@@ -1,6 +1,7 @@
 import pymongo
 
 from places.models import Country, State, City
+from bios.models import Bio
 
 connection = pymongo.Connection()
 soccer_db = connection.soccer
@@ -98,3 +99,26 @@ def make_city_getter():
             return City.objects.create(name=c['name'], state=state, country=country)
 
     return get_city
+
+
+
+def make_bio_getter():
+    """
+    Retrieve bios easily.
+    """
+
+    bios = Bio.objects.bio_dict()
+
+    def get_bio(name):
+        name = name.strip()
+
+        if name in bios:
+            bio_id = bios[name]
+        else:
+            bio_id = Bio.objects.find(name).id
+            bios[name] = bio_id
+
+        return bio_id
+
+    return get_bio
+
