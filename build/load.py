@@ -18,6 +18,8 @@ soccer_db = connection.soccer
 from organizations.models import Confederation
 from places.models import Country, State, City
 
+from getters import *
+
 
 def load1():
 
@@ -88,6 +90,7 @@ def load_confederations():
 
 def load_places():
 
+    # Load countries
     for country in soccer_db.countries.find():
         country.pop('_id')
         country['slug'] = slugify(country['name'])
@@ -100,19 +103,16 @@ def load_places():
         country['subconfederation'] = country['subconfederation'] or ''
         Country.objects.create(**country)
 
-    
-
-
+    # Load states
     for state in soccer_db.states.find():
         state.pop('_id')
         state['country'] = Country.objects.get(name=state['country'])
         state['slug'] = slugify(state['name'])
         State.objects.create(**state)
 
-    return
 
+    # Load cities
     cg = make_city_pre_getter()
-
     city_set = set()
 
     for city in soccer_db.cities.find():

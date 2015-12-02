@@ -1,8 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from django.http import HttpResponse
 
-from .models import Country
+from .models import Country, City, Stadium
 
 
 
@@ -29,8 +29,9 @@ def country_detail(request, slug):
 
         country = get_object_or_404(Country, slug=slug)
         stadiums = Stadium.objects.filter(city__country=country)
-        births = Bio.objects.filter(birthplace__country=country).order_by('birthdate')
-        competitions = Competition.objects.filter(scope='Country', area=country.name)
+        births = competitions = []
+        #births = Bio.objects.filter(birthplace__country=country).order_by('birthdate')
+        #competitions = Competition.objects.filter(scope='Country', area=country.name)
         cities = City.objects.filter(country=country)
 
         context = {
@@ -40,7 +41,7 @@ def country_detail(request, slug):
                 'competitions': competitions,
                 'cities': cities,
                 }
-        return render_to_response("places/country_detail.html",
-                                  context,
-                                  context_instance=RequestContext(request))
+        return render(request, 
+                      "places/country_detail.html",
+                      context)
 
