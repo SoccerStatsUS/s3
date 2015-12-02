@@ -16,7 +16,7 @@ django.setup()
 connection = pymongo.Connection()
 soccer_db = connection.soccer
 
-
+from competitions.models import Competition, CompetitionRelationship
 from organizations.models import Confederation
 from places.models import Country, State, City
 from sources.models import Source, SourceUrl
@@ -39,7 +39,7 @@ def load1():
     #load_geo()
 
 
-    #generate_mongo_indexes()
+    generate_mongo_indexes()
 
     # Non-game data.
     load_sources()
@@ -47,6 +47,28 @@ def load1():
     load_places()
 
 
+    # Simple sport data
+
+    load_competitions()
+    load_teams()
+
+    return
+    load_seasons()
+
+    load_bios()
+    load_stadiums()
+
+    load_salaries()
+
+
+
+
+def generate_mongo_indexes():
+    """
+    """
+    # Not sure why I need to do this, but it seems necessary.
+
+    soccer_db.games.ensure_index("date")
 
 
 def load_sources():
@@ -144,6 +166,29 @@ def load_places():
 
     for e in city_set:
         City.objects.create(**dict(e))
+
+
+
+
+
+@transaction.atomic
+def load_competitions():
+
+
+    print("loading competitions")
+    for c in soccer_db.competitions.find():
+        c.pop('_id')
+        Competition.objects.create(**c)
+
+    for d in soccer_db.competition_relations.find():
+        try:
+            b = Competition.objects.get(name=d['before'])
+        except:
+            import pdb; pdb.set_trace()
+
+        a = Competition.objects.get(name=d['after'])
+        CompetitionRelationship.objects.create(before=b, after=a)
+        
 
 
 

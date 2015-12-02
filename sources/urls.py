@@ -1,13 +1,15 @@
 from django.conf.urls import patterns, url
 
-urlpatterns = patterns('sources.views', 
+from . import views
+
+urlpatterns = [
 
                        url(r'^$',
-                           'source_index',
+                           views.source_index,
                            name='source_index'),
 
                        url(r'^(?P<source_id>\d+)/$',
-                           'source_detail',
+                           views.source_detail,
                            name='source_detail'),
 
-                       )
+    ]
