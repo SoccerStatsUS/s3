@@ -1,0 +1,21 @@
+<div id="bio_block">
+
+<div id="bio_image">
+
+{% if bio.images.all %}
+<img height="180" src="{{ bio.images.all.0.path }}">
+{% endif %}
+
+</div>
+
+
+<div id="bio_data">
+  
+  <div>{{ bio.name }}</div>
+  {% if bio.position %}
+  <div>position: {{ bio.position }}</div>
+  {% endif %}
+
+</div>
+
+</div>
