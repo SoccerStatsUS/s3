@@ -69,6 +69,15 @@ def load1():
 
 
 
+def load4():
+    #load_news();
+    # Consider loading stats last so that we can generate 
+    load_stats()
+    #print hpy().heap()
+
+    # Analysis data
+
+
 
 
 def generate_mongo_indexes():
@@ -610,6 +619,106 @@ def load_games():
                         })
 
     insert_sql("games_gamesource", l)
+
+
+
+
+@timer
+@transaction.atomic
+def load_stats():
+    print("\nloading stats\n")
+
+    @timer
+    def f():
+        return 
+
+
+    team_getter, bio_getter, competition_getter, season_getter, source_getter = (
+        make_team_getter(), make_bio_getter(), make_competition_getter(), make_season_getter(), make_source_getter(),)
+                
+    print("\nprocessing\n")
+
+    l = []    
+    i = 0
+    for i, stat in enumerate(soccer_db.stats.find(timeout=False)): # no timeout because this query takes forever.
+
+
+        if i % 50000 == 0:
+            print(i)
+
+        if stat['name'] == '':
+            #import pdb; pdb.set_trace()
+            continue
+
+
+        team_id = team_getter(stat['team'])
+        bio_id = bio_getter(stat['name'])
+        competition_id = competition_getter(stat['competition'])
+        season_id = season_getter(stat['season'], competition_id)
+
+
+        # cf game_sources stuff.
+        """
+        # change to sources!
+        if stat.get('sources'): 
+            sources = sorted(set(stat.get('sources')))
+        elif stat.get('source'):
+            sources = [stat['source']]
+        else:
+            sources = []
+
+        for source in sources:
+            if source.strip() == '':
+                continue
+            elif source.startswith('http'):
+                source_url = source
+            else:
+                source_url = ''
+            source_id = source_getter(source)
+            #t = (game['date'], team1_id, source_id, source_url)
+            #stat_sources.append(t)
+        """
+
+        if stat.get('source'):
+            source_id = source_getter(stat['source'])
+
+        else:
+            source_id = None
+
+        def c2i(key):
+            # Coerce an integer
+
+            if key in stat and stat[key] != None:
+                if type(stat[key]) != int:
+                    import pdb; pdb.set_trace()
+                return stat[key]
+
+            else:
+                return None
+
+        l.append({
+            'player_id': bio_id,
+            'team_id': team_id,
+            'competition_id': competition_id,
+            'season_id': season_id,
+            'games_started': c2i('games_started'),
+            'games_played': c2i('games_played'),
+            'minutes': c2i('minutes'),
+            'goals': c2i('goals'),
+            'assists': c2i('assists'),
+            'shots': c2i('shots'),
+            'shots_on_goal': c2i('shots_on_goal'),
+            'fouls_committed': c2i('fouls_committed'),
+            'fouls_suffered': c2i('fouls_suffered'),
+            'yellow_cards': c2i('yellow_cards'),
+            'red_cards': c2i('red_cards'),
+            'source_id': source_id,
+            })
+
+    print(i)
+
+    insert_sql("stats_stat", l)
+
 
 
 

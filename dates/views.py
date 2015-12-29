@@ -1,3 +1,6 @@
+import datetime
+
+from django.shortcuts import render, get_object_or_404
 from django.views.decorators.cache import cache_page
 
 from bios.models import Bio
@@ -16,8 +19,8 @@ def year_detail(request, year):
     games = Game.objects.filter(date__year=int(year)).order_by('date', 'season')
     births = Bio.objects.filter(birthdate__year=year).order_by('birthdate')
     deaths = Bio.objects.filter(deathdate__year=year).order_by('deathdate')
-    hires = Position.objects.filter(start__year=year)
-    fires = Position.objects.filter(end__year=year)
+    #hires = Position.objects.filter(start__year=year)
+    #fires = Position.objects.filter(end__year=year)
 
     years = Game.objects.game_years()
 
@@ -39,8 +42,8 @@ def year_detail(request, year):
     context = {
         'games': games.select_related(),
         'births': births.select_related(),
-        'hires': hires.select_related(),
-        'fires': fires.select_related(),
+        #'hires': hires.select_related(),
+        #'fires': fires.select_related(),
         'years': years,
         'stadiums': stadiums,
         'date': str(year),
@@ -48,9 +51,8 @@ def year_detail(request, year):
         'next_date': next_date_tuple,
 
         }
-    return render_to_response("dates/list.html",
-                              context,
-                              context_instance=RequestContext(request))
+    return render(request, "dates/list.html", context)
+
 
 @cache_page(60 * 60 * 12)
 def month_detail(request, year, month):
@@ -65,8 +67,8 @@ def month_detail(request, year, month):
     games = Game.objects.filter(date__year=year, date__month=month).order_by('date', 'season')
     births = Bio.objects.filter(birthdate__year=year, birthdate__month=month).order_by('birthdate')
     deaths = Bio.objects.filter(deathdate__year=year, deathdate__month=month).order_by('deathdate')
-    hires = Position.objects.filter(start__year=year, start__month=month)
-    fires = Position.objects.filter(end__year=year, end__month=month)
+    #hires = Position.objects.filter(start__year=year, start__month=month)
+    #fires = Position.objects.filter(end__year=year, end__month=month)
 
     stadium_ids = set([e[0] for e in games.exclude(stadium=None).values_list('stadium')])
     stadiums = Stadium.objects.filter(id__in=stadium_ids)
@@ -93,16 +95,14 @@ def month_detail(request, year, month):
     context = {
         'games': games.select_related(),
         'births': births,
-        'hires': hires,
-        'fires': fires,
+        #'hires': hires,
+        #'fires': fires,
         'stadiums': stadiums[:20],
         'date': '%s/%s' % (month, year),
         'previous_date': previous_date_tuple,
         'next_date': next_date_tuple,
         }
-    return render_to_response("dates/list.html",
-                              context,
-                              context_instance=RequestContext(request))
+    return render(request, "dates/list.html", context)
 
 
 @cache_page(60 * 60 * 12)
@@ -119,8 +119,8 @@ def date_detail(request, year, month, day):
     games = Game.objects.filter(date=d).order_by('date', 'season')
     births = Bio.objects.filter(birthdate=d).order_by('birthdate')
     deaths = Bio.objects.filter(deathdate=d).order_by('deathdate')
-    hires = Position.objects.filter(start=d)
-    fires = Position.objects.filter(end=d)
+    #hires = Position.objects.filter(start=d)
+    #fires = Position.objects.filter(end=d)
 
     #news = FeedItem.objects.filter(dt__year=year, dt__month=month, dt__day=day).order_by('dt')
 
@@ -150,8 +150,8 @@ def date_detail(request, year, month, day):
     context = {
         'games': games.select_related(),
         'births': births,
-        'hires': hires,
-        'fires': fires,
+        #'hires': hires,
+        #'fires': fires,
         'date': '%s/%s/%s' % (d.month, d.day, d.year),
         'previous_date': previous_date_tuple,
         'next_date': next_date_tuple,
@@ -160,9 +160,7 @@ def date_detail(request, year, month, day):
         #'news': news,
         #'stats': stats,
         }
-    return render_to_response("dates/list.html",
-                              context,
-                              context_instance=RequestContext(request))
+    return render(request, "dates/list.html", context)
 
 
 @cache_page(60 * 60 * 12)
@@ -180,20 +178,18 @@ def day_detail(request, month, day):
     games = Game.objects.filter(date__month=month, date__day=day)
     births = Bio.objects.filter(birthdate__month=month,birthdate__day=day).order_by('birthdate')
     deaths = Bio.objects.filter(deathdate__month=month, deathdate__day=day).order_by('deathdate')
-    hires = Position.objects.filter(start__month=month, start__day=day)
-    fires = Position.objects.filter(end__month=month, end__day=day)
+    #hires = Position.objects.filter(start__month=month, start__day=day)
+    #fires = Position.objects.filter(end__month=month, end__day=day)
 
 
     context = {
         'games': games.select_related(),
         'births': births,
-        'hires': hires,
-        'fires': fires,
+        #'hires': hires,
+        #'fires': fires,
         'day_string': day_string,
         'next_day': next_day,
         'previous_day': previous_day,
 
         }
-    return render_to_response("dates/list.html",
-                              context,
-                              context_instance=RequestContext(request))
+    return render(request, "dates/list.html", context)

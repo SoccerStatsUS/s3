@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'organizations',
     'places',
     'teams',
+    'stats',
 
     'tags',
 
