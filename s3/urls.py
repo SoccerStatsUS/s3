@@ -18,7 +18,11 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
+from django.views.generic import TemplateView
+
+
 urlpatterns = [
+    url(r'^$', TemplateView.as_view(template_name='homepage.html'), name="homepage"),
     url(r'^bios/', include('bios.urls')),
     url(r'^competitions/', include('competitions.urls')),
     url(r'^dates/', include('dates.urls')),
