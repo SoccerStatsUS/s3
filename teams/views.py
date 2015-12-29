@@ -19,11 +19,7 @@ def team_index(request):
 
     name_dict = OrderedDict()
 
-    """
-
-
-    standings = Standing.objects.filter(competition=None)
-    """
+    #standings = Standing.objects.filter(competition=None)
 
     for letter in letters:
         teams = Team.objects.filter(name__istartswith=letter)
@@ -52,12 +48,12 @@ def team_detail(request, team_slug):
     Just about the most important view of all.
     """
     team = get_object_or_404(Team, slug=team_slug)
-    # Add aliases.
 
     today = datetime.date.today()
 
-    """
+
     stats = TeamStat.objects.filter(team=team)
+    """
 
     goal_leaders = game_leaders = None
     if stats.exclude(games_played=None).exists():
@@ -103,7 +99,7 @@ def team_detail(request, team_slug):
     context = {
         'team': team,
         #'awards': awards,
-        #'stats': stats[:15],
+        'stats': stats[:15],
         #'stats': stats,
         }
     """
