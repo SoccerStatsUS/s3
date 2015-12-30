@@ -121,34 +121,40 @@ class AbstractStat(StandingStat):
 
 
 
+
+class CareerStat(AbstractStat):
+    # Should rename player person?
+    player = models.ForeignKey(Bio)
+
+
+class CompetitionStat(AbstractStat):
+    player = models.ForeignKey(Bio)
+    competition = models.ForeignKey(Competition)
+
+
 class TeamStat(AbstractStat):
-
-
     player = models.ForeignKey(Bio)
     team = models.ForeignKey(Team)
 
 
-    class Meta:
-        abstract = False
+class SeasonStat(AbstractStat):
+    player = models.ForeignKey(Bio)
+    competition = models.ForeignKey(Competition) # Redundancy
+    season = models.ForeignKey(Season)
 
 
-
+class TeamCompetitionStat(AbstractStat):
+    player = models.ForeignKey(Bio)
+    competition = models.ForeignKey(Competition)
+    team = models.ForeignKey(Team)
 
 
 class Stat(AbstractStat):
-
-
-
     player = models.ForeignKey(Bio)
     competition = models.ForeignKey(Competition) # Redundancy
     season = models.ForeignKey(Season)
     team = models.ForeignKey(Team)
 
-
-
-    class Meta:
-        abstract = False
-
-
     def __str__(self):
         return u"%s: %s/%s/%s" % (self.player, self.competition, self.season.name, self.team)
+

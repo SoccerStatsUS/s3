@@ -131,3 +131,33 @@ class Bio(models.Model):
             self.slug = slugify(self.name)
             
         super(Bio, self).save(*args, **kwargs)
+
+
+
+    def career_stat(self):
+        """
+        Summary stats for a player's entire career.
+        """
+        from stats.models import CareerStat
+
+        try:
+            return CareerStat.objects.get(player=self)
+        except:
+            return None
+
+    def competition_stats(self):
+        """
+        Summary stats for a player in a given competition (e.g. MLS)
+        """
+        from stats.models import CompetitionStat
+
+        return CompetitionStat.objects.filter(player=self)
+
+    def team_stats(self):
+        """
+        Summary stats for a player in a given competition (e.g. MLS)
+        """
+        from stats.models import TeamStat
+
+        return TeamStat.objects.filter(player=self)
+
