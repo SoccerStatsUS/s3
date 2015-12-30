@@ -1,0 +1,65 @@
+{% load datum_or_none %}
+<table class="game-list">
+
+  {% for game in games %}
+  <tr>
+    {% comment %}
+    Need to figure out an elegant way to handle team1 / home team management.
+    Probably team1 should be home team if possible, then 
+    {% endcomment %}
+
+    {% if 'date' not in exclude %}
+    {% if game.date %}
+    <td><a href="{% url 'date_detail' game.date.year game.date.month game.date.day %}">{{ game.date }}</a></td>
+    {% else %}
+    <td></td>
+    {% endif %}
+    {% endif %}
+
+    {% if 'competition' not in exclude %}
+    <td><a href="{% url 'competition_detail' game.competition.slug %}">{{ game.competition.abbreviation }}</a></td>
+    {% endif %}
+
+    <td><a href="{% url 'season_detail' game.competition.slug game.season.slug %}">{{ game.season.name }}</a></td>
+
+    {% if 'round' not in exclude %}{% if has_round %}<td>{{ game.round }}</td>{% endif %}{% endif %}
+    {% if 'group' not in exclude %}{% if has_group %}<td>{{ game.group }}</td>{% endif %}{% endif %}
+
+    {% if game.winner == game.team1 %}
+    <td><a href="{% url 'team_detail' game.team1.slug %}"><strong>{{ game.team1_original_name }}</strong></a></td>
+    {% else %}
+    <td><a href="{% url 'team_detail' game.team1.slug %}">{{ game.team1_original_name }}</a></td>
+    {% endif %}
+
+    <td class="result"><a title="{{ game.goal_string }}" href="{% url 'game_detail' game.id %}">{{ game.score_or_result }}</a></td>
+
+
+    {% if game.winner == game.team2 %}
+    <td><a href="{% url 'team_detail' game.team2.slug %}"><strong>{{ game.team2_original_name }}</strong></a></td>
+    {% else %}
+    <td><a href="{% url 'team_detail' game.team2.slug %}">{{ game.team2_original_name }}</a></td>
+    {% endif %}
+
+    {% if 'stadium' not in exclude %}
+    {% include "templatetags/games/place.html"  %}
+    {% endif %}
+
+    {% if 'referee' not in exclude %}
+    {% if game.referee %}
+    <td><a href="{% url 'person_detail' game.referee.slug %}">{{ game.referee.name }}</a></td>
+    {% else %}
+    <td></td>
+    {% endif %}
+    {% endif %}
+
+    {% if 'attendance' not in exclude %}
+    {% datum_or_grey game.attendance %}
+    {% endif %}
+
+    <td>{{ game.sources.count }}</td>
+
+  </tr>
+  {% endfor %}
+</table>
+
+

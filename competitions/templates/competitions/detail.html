@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% load datum_or_none %}
 
-{% comment %}
+{% load stats %}
 
+{% comment %}
 {% load standings %}
 {% load seasons %}
-{% load stats %}
-{% load games %}
 
+{% load games %}
 {% endcomment %}
 
 {% block title %}{{ competition.name }} Soccer History {% endblock %}
@@ -43,9 +43,13 @@
 {% seasons_table competition.season_set.reverse %}
 </div>
 
+{% endcomment %}
+
 <div tab="stats">
 {% stats_table stats 'team,season'%}
 </div>
+
+{% comment %}
 
 
 {% if big_winners %}

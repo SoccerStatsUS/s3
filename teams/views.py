@@ -1,8 +1,10 @@
 from collections import OrderedDict
 import datetime
+import json
 
 from django.shortcuts import render, get_object_or_404
 
+from games.models import Game
 from stats.models import TeamStat
 from teams.models import Team
 
@@ -120,3 +122,76 @@ def team_detail(request, team_slug):
     return render(request, 
                   "teams/detail.html",
                   context)
+
+
+
+
+#@cache_page(60 * 24)
+def team_games(request, team_slug):
+    """
+    A filterable table of all games played by a team.
+    """
+    team = get_object_or_404(Team, slug=team_slug)
+
+    games = Game.objects.team_filter(team)
+
+    """
+    if request.method == 'GET':
+        form = TeamGameForm(team, request.GET)
+
+        if form.is_valid():
+
+            if form.cleaned_data['opponent']:
+                games = Game.objects.team_filter(team, form.cleaned_data['opponent'])
+            else:
+                games = Game.objects.team_filter(team)
+
+            if form.cleaned_data['competition']:
+                games = games.filter(competition=form.cleaned_data['competition'])
+
+            if form.cleaned_data['stadium']:
+                games = games.filter(stadium=form.cleaned_data['stadium'])
+
+            r = form.cleaned_data['result']
+            if r:
+                if r == 't':
+                    games = games.filter(team1_result='t')
+                else:
+                    games = games.filter(Q(team1=team, team1_result=r) | Q(team2=team, team2_result=r))
+
+
+
+            if form.cleaned_data['year']:
+                year = int(form.cleaned_data['year'])
+                games = games.exclude(date=None)
+                year_filter = form.cleaned_data['year_filter']
+                if year_filter == '>':
+                    d = datetime.date(year, 1, 1)
+                    games = games.filter(date__gte=d)
+                elif year_filter == '<':
+                    d = datetime.date(year, 12, 31)
+                    games = games.filter(date__lte=d)
+                else:
+                    games = games.filter(date__year=year)
+    else:
+        form = TeamGameForm(bio)
+    """
+
+    games = games.select_related().order_by('-has_date', '-date', '-season')
+    #games = games.select_related().order_by('-date', '-season')
+
+    #standings = [TempGameStanding(games, team)]
+    standings = []
+
+
+    calendar_data = [(e.date.isoformat(), e.result(team), e.score(), e.opponent(team).name) for e in games if e.date]
+
+    context = {
+        'team': team,
+        #'form': form,
+        'games': games,
+        'standings': standings,
+        'calendar_data': json.dumps(calendar_data),
+        }
+
+    return render(request, "teams/games.html", context)

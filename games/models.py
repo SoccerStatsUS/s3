@@ -11,6 +11,19 @@ from teams.models import Team
 class GameManager(models.Manager):
 
 
+
+
+    def team_filter(self, team1, team2=None):
+        """
+        Return all games played by a given team.
+        """
+
+        if team2 is None:
+            return Game.objects.filter(models.Q(team1=team1) | models.Q(team2=team1))
+        else:
+            return Game.objects.filter(models.Q(team1=team1, team2=team2) | models.Q(team2=team1, team1=team2))
+
+
     def games(self):
         l = [e['date'] for e in Game.objects.values("date").distinct()]
         return [e for e in l if e is not None]

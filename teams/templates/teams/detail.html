@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% load datum_or_none %}
 
+{% load stats %}
+{% load games %}
+
 {% comment %}
 {% load standings %}
-{% load games %}
-{% load stats %}
+
 {% endcomment %}
 
 {% block title %}{{ team.name }}{% endblock %}
@@ -39,19 +41,19 @@
 
 <div id="tab_wrapper">
 
-{% comment %}
+
 <div tab="summary">
 </div>
-{% endcomment %}
 
-{% comment %}
+
+
 
 {% if competition_standings or league_standings %}
 <div tab="standings">
-
+{% comment %}
 {% standings_table competition_standings 'team,season' %}
-
 {% standings_table league_standings 'team' %}
+{% endcomment %}
 
 </div>
 {% endif %}
@@ -62,6 +64,8 @@
 <div>
 <a href="{% url 'team_stats' team.slug %}">all stats</a>
 </div>
+
+
 
 {% if game_leaders %}
 <div class="col">
@@ -80,11 +84,12 @@
 </div>
 {% endif %}
 
+
+
 <div tab="games">
 <a href="{% url 'team_games' team.slug %}">all games</a>
-{% games_table recent_games %}
+{# {% games_table recent_games %} #}
 </div>
 
-{% endcomment %}
 
 {% endblock %}
