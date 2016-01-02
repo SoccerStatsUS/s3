@@ -1,6 +1,7 @@
 import datetime
 
 from django.db import models
+from django.template.defaultfilters import slugify
 
 from places.models import City
 
@@ -127,6 +128,20 @@ class Team(models.Model):
 
     def __str__(self):
         return self.short_name
+
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.short_name)
+            
+        super(Team, self).save(*args, **kwargs)
+
+
+
+    def game_set(self):
+        from games.models import Game
+        return Game.objects.filter(models.Q(team1=self) | models.Q(team2=self))
+
 
 
 

@@ -74,10 +74,13 @@ def team_detail(request, team_slug):
 
 
     draftees = team.former_team_set.exclude(player=None).order_by('-draft__season', 'number')[:10]
+    """
 
     recent_games = team.game_set().filter(date__lt=today).order_by('-date').select_related()[:10]
     if recent_games.count() == 0:
         recent_games = team.game_set().select_related()[:10]
+
+    """
 
     current_staff = team.position_set.filter(end=None)
 
@@ -104,9 +107,10 @@ def team_detail(request, team_slug):
         #'awards': awards,
         'stats': stats[:15],
         #'stats': stats,
+        'recent_games': recent_games,
         }
     """
-        'recent_games': recent_games,
+
         'competition_standings': competition_standings,
         'league_standings': league_standings,
         'positions': positions,

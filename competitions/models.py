@@ -83,6 +83,19 @@ class Competition(AbstractCompetition):
         super(Competition, self).save(*args, **kwargs)
 
 
+
+    def make_abbreviation(self):
+        
+        if self.name is None:
+            import pdb; pdb.set_trace()
+
+        words = self.name.split(' ')
+        first_letters = [e.strip()[0] for e in words if e.strip()]
+        first_letters = [e for e in first_letters if e not in '-()']
+        return "".join(first_letters)
+
+
+
 class CompetitionRelationship(models.Model):
     before = models.ForeignKey('Competition', related_name='before')
     after = models.ForeignKey('Competition', related_name='after')

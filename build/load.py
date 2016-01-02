@@ -67,6 +67,7 @@ def load1():
     # Complex game data
     load_games()
 
+    load_events()
 
 
 def load4():
@@ -80,12 +81,29 @@ def load4():
 
 
 
+
+
+
 def generate_mongo_indexes():
     """
     """
     # Not sure why I need to do this, but it seems necessary.
 
     soccer_db.games.ensure_index("date")
+
+
+
+def load_events():
+    """
+    Load generic events.
+    """
+    # shots (including goals), fouls (including cards), substitutions, corner kicks, throw ins
+    # passes and tackles would be the ultimate extension here.
+
+    #load_substitutions()
+    load_goals()
+    load_assists()
+
 
 
 def load_sources():
@@ -251,6 +269,9 @@ def load_teams():
         founded = city = dissolved =None
 
         slug = slugify(team['name'])
+        if slug =='':
+            import pdb; pdb.set_trace()
+
         short_name = team.get('short_name') or team['name']
 
         if type(team['founded']) == int:
@@ -718,6 +739,147 @@ def load_stats():
     print(i)
 
     insert_sql("stats_stat", l)
+
+
+
+@timer
+@transaction.atomic
+def load_goals():
+    print("\nloading goals\n")
+
+    team_getter = make_team_getter()
+    bio_getter = make_bio_getter()
+    game_getter = make_game_getter()
+    gid_getter = make_gid_getter()
+
+    l = []
+
+    def create_goal(goal):
+
+        team_id = team_getter(goal['team'])
+        bio_id = ogbio_id = None
+
+        if goal['goal']:
+            bio_id = bio_getter(goal['goal'])
+
+        if goal.get('own_goal_player'):
+            ogbio_id = bio_getter(goal['own_goal_player'])
+
+
+        # Tough to apply a goal without a date...
+        if not goal['date']:
+            return {}
+
+        # Coerce to date to match dict.
+        d = datetime.date(goal['date'].year, goal['date'].month, goal['date'].day)
+
+        # Try gid first, fall back on team/date.
+        game_id = None
+
+        if 'gid' in goal:
+            game_id = gid_getter(goal['gid'])
+
+        if game_id is None:
+            game_id = game_getter(team_id, d)
+
+        if not game_id:
+            print("Cannot create %s" % goal)
+            return {}
+        else:
+            return {
+                'date': goal['date'],
+                'minute': goal['minute'],
+                'team_id': team_id, 
+                #'team_original_name': '',
+
+                'player_id': bio_id, #player,
+                'own_goal_player_id': ogbio_id,
+
+                'game_id': game_id, 
+
+                'own_goal': goal.get('own_goal', False),
+                'penalty': goal.get('penalty', False),
+                }
+
+    i = 0 # if no goals.
+    goals = []
+    for i, goal in enumerate(soccer_db.goals.find()):
+        if i % 50000 == 0:
+            print(i)
+
+        g = create_goal(goal)
+        if g:
+            goals.append(g)
+
+    print(i)
+    insert_sql('goals_goal', goals)
+        
+@timer
+@transaction.atomic
+def load_assists():
+    print("\nloading assists\n")
+
+    team_getter = make_team_getter()
+    bio_getter = make_bio_getter()
+    goal_getter = make_goal_getter()
+
+    def create_assists(goal):
+
+        #if goal['competition'] == 'Major League Soccer'  and goal['season'] == '1996':
+        #    import pdb; pdb.set_trace()
+        
+
+
+        if not goal['assists']:
+            return []
+
+        if goal['assists'] == ['']:
+            return []
+
+
+
+        team_id = team_getter(goal['team'])
+        bio_id = ogbio_id = None
+
+        if goal['goal']:
+            bio_id = bio_getter(goal['goal'])
+
+
+        if not goal['date']:
+            return {}
+
+        d = datetime.date(goal['date'].year, goal['date'].month, goal['date'].day)
+
+        goal_id = goal_getter(team_id, bio_id, goal['minute'], d)
+        if not goal_id:
+            #import pdb; pdb.set_trace()
+            print("Cannot create assists for %s" % goal)
+            return []
+
+        seen = set()
+
+        for assister in goal['assists']:
+            assist_ids = [bio_getter(e) for e in goal['assists']]
+            for i, assist_id in enumerate(assist_ids, start=1):
+                if assist_id and assist_id not in seen:
+                    seen.add(assist_id)
+                    assists.append({
+                        'player_id': assist_id,
+                        'goal_id': goal_id,
+                        'order': i,
+                        })
+
+    assists = []
+
+    i = 0
+    for i, goal in enumerate(soccer_db.goals.find()):
+        if i % 50000 == 0:
+            print(i)
+        create_assists(goal)
+
+    print(i)
+    print(len(assists))
+    insert_sql('goals_assist', assists)
 
 
 

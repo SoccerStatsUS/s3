@@ -1,3 +1,5 @@
+HELLO
+
 {% load datum_or_none %}
 <table class="game-list">
 
@@ -41,7 +43,7 @@
     {% endif %}
 
     {% if 'stadium' not in exclude %}
-    {% include "templatetags/games/place.html"  %}
+    {% include "fragments/place.html"  %}
     {% endif %}
 
     {% if 'referee' not in exclude %}

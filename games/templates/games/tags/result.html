@@ -68,7 +68,7 @@
   <tr>
 
     {% if goal.team == game.team1 %}
-    <td class="left_goal">{% include "templatetags/fragments/goal.html"  %}</td>
+    <td class="left_goal">{% include "fragments/goal.html"  %}</td>
     {% else %}
     <td class="greybg"></td>
     {% endif %}
@@ -76,7 +76,7 @@
     {% datum_or_grey goal.minute %}
 
     {% if goal.team == game.team2 %}
-    <td class="right_goal">{% include "templatetags/fragments/goal.html"  %}</td>
+    <td class="right_goal">{% include "fragments/goal.html"  %}</td>
     {% else %}
     <td class="greybg"></td>
     {% endif %}

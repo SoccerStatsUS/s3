@@ -4,7 +4,7 @@ import datetime
 from bios.models import Bio
 from competitions.models import Competition, Season
 from games.models import Game
-#from goals.models import Goal
+from goals.models import Goal
 from teams.models import Team
 from places.models import Country, State, City, Stadium
 from sources.models import Source
