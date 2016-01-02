@@ -1,3 +1,5 @@
+{% load staticfiles %}
+
 {% block doctype_tag %}<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">{% endblock %}
 
@@ -7,6 +9,10 @@
   <title>{% block title %}All-time American soccer statistics{% endblock %} | SoccerStats.us </title>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
   <meta name="Description" content="United States Men's National Soccer team statistics and history">
+
+  <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
+
+
 </head>
 
 <body>
