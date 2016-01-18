@@ -7,15 +7,22 @@
 
 {% block content %}
 
-<img height="100" widt="100" src="{% static 'ussoccer.jpg' %}" />
-<span id="title">USMNTstats.com</span>
 
-
-<ul>
+<table id="homepage_games">
 {% for game in games %}
-<li><a href="{% url 'game_detail' game.id %}">{{ game }}</a></li>
+<tr>
+  <td>{{ game.date}}</td>
+  <td><a href="{% url 'team_detail' game.team1.slug %}">{{ game.team1 }}</a></td>
+  <td><a href="{% url 'game_detail' game.id %}">{{ game.result_string }}</a></td>
+  <td><a href="{% url 'team_detail' game.team2.slug %}">{{ game.team2 }}</a></td>
+  <td>{{ game.stadium }}</td>
+</tr>
 {% endfor %}
-</ul>
+</table>
+
+<div>
+<a href="{% url 'team_games' 'united-states' %}">ALL USMNT GAMES</a>
+</div>
 
 
 

@@ -13,7 +13,7 @@ def homepage(request):
     """
 
     team = Team.objects.get(slug='united-states')
-    games = Game.objects.team_filter(team).order_by("-date").exclude(date=None)[:10]
+    games = Game.objects.team_filter(team).order_by("-date").exclude(date=None)[:20]
 
     context = {
         'games': games,

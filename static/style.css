@@ -1,10 +1,10 @@
 
 body {
-
     background-color: #fff;
+    font-family: Tahoma, Geneva, sans-serif;
 }
 
-#title {
+#title a {
     color: #c02233;
     font-weight: bold;
     font-size: 2em;
@@ -12,8 +12,14 @@ body {
 
 a {
     color: #248;
+    text-decoration: none
 }
 
 ul {
     list-style-type: none;
+}
+
+
+#homepage_games td {
+    border: 1px solid #eee;
 }
