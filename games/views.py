@@ -2,7 +2,26 @@ from collections import defaultdict, Counter
 
 from django.shortcuts import render, get_object_or_404
 
+from teams.models import Team
 from .models import Game, GameSource
+
+
+
+def homepage(request):
+    """
+    Homepage
+    """
+
+    team = Team.objects.get(slug='united-states')
+    games = Game.objects.team_filter(team).order_by("-date").exclude(date=None)[:10]
+
+    context = {
+        'games': games,
+        }
+
+    return render(request, 
+                  "games/homepage.html",
+                  context)
 
 
 def games_index(request):

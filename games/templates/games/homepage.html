@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}homepage{% endblock %}
+
+
+{% block content %}
+
+<img height="100" widt="100" src="{% static 'ussoccer.jpg' %}" />
+<span id="title">USMNTstats.com</span>
+
+
+<ul>
+{% for game in games %}
+<li><a href="{% url 'game_detail' game.id %}">{{ game }}</a></li>
+{% endfor %}
+</ul>
+
+
+
+
+{% endblock %}

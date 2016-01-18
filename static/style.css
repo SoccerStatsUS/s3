@@ -1,5 +1,19 @@
 
 body {
 
-    background-color: #ccc;
+    background-color: #fff;
+}
+
+#title {
+    color: #c02233;
+    font-weight: bold;
+    font-size: 2em;
+}
+
+a {
+    color: #248;
+}
+
+ul {
+    list-style-type: none;
 }

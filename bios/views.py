@@ -1,10 +1,11 @@
-from django.shortcuts import render, get_object_or_404
+from collections import OrderedDict
 
 from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404
 
 from .models import Bio
 
-from stats.models import Stat
+from stats.models import Stat, CareerStat
 
 
 

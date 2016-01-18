@@ -20,9 +20,11 @@ from django.contrib import admin
 
 from django.views.generic import TemplateView
 
+from games import views
+
 
 urlpatterns = [
-    url(r'^$', TemplateView.as_view(template_name='homepage.html'), name="homepage"),
+    url(r'^$', views.homepage, name='homepage'),
     url(r'^bios/', include('bios.urls')),
     url(r'^competitions/', include('competitions.urls')),
     url(r'^dates/', include('dates.urls')),
