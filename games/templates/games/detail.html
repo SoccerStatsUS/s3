@@ -9,36 +9,64 @@
 
 <div id="game_block">
 
+
+<div id="game_top">
+
+  {% comment %}
   <h3>
     {% if game.season_previous_game %}<a href="{% url 'game_detail' game.season_previous_game.id %}">←</a>{% endif %}
-    <a href="{% url 'competition_detail' game.competition.slug %}">{{ game.competition }}</a> - 
-    <a href="{% url 'season_detail' game.competition.slug game.season.slug %}">{{ game.season.name }}</a>
     {% if game.season_next_game %}<a href="{% url 'game_detail' game.season_next_game.id %}">→</a>{% endif %}
   </h3>
-    
-  <ul>
-    {% if game.date %}
-    <li><a href="{% url 'date_detail' game.date.year game.date.month game.date.day %}">{{ game.date|date:"l, F d, Y" }}</a></li>
-    {% endif %}
-  
+  {% endcomment %}
+
+
+    <a href="{% url 'competition_detail' game.competition.slug %}">{{ game.competition }}</a> - <a href="{% url 'season_detail' game.competition.slug game.season.slug %}">{{ game.season.name }}</a>
+
+    {% if game.date %}<a href="{% url 'date_detail' game.date.year game.date.month game.date.day %}">{{ game.date|date:"l, F d, Y" }}</a>{% endif %}
+
     {% if game.stadium.slug %}
-    <li><a href="{% url 'stadium_detail' game.stadium.slug %}">
+    <a href="{% url 'stadium_detail' game.stadium.slug %}">
       {% if game.stadium.short_name %}{{ game.stadium.short_name }}{% else %}{{ game.stadium.name }}{% endif %}
-    </a></li>
+    </a>
     {% else %}
-    {% if game.location %}<li>in {{ game.location }}</li>{% endif %}
+    {% if game.location %}{{ game.location }}{% endif %}
     {% endif %}
-  </ul>
 
 </div>
 
-<div id="tab_block"><ul id="tabs"></ul></div>
 
-<div id="tab_wrapper">
+<div id="game_middle">
 
+  <div id="game_details">
+    <ul>
+  {% if game.group %}
+    <li>group {{ game.group }}</li>
+  {% endif %}
+
+  {% if game.round %}
+    <li>round {{ game.round }}</li>
+  {% endif %}
+
+    {% if game.referee %}
+    <li>referre:<a href="{% url 'person_detail' game.referee.slug %}">{{ game.referee }}</a></li>
+    {% endif %}
+
+    {% if game.attendance %}
+    <li>attendance: {{ game.attendance }}</li>
+    {% endif %}
+    </ul>
+  </div>
+
+
+{% include "games/tags/score.html" %}
+    
+</div>
+
+{% include "games/tags/result.html" %}
 
 <div tab="detail" id="game-data">
-{% include "games/tags/result.html" %}
+
+{% comment %}
 
 {% if game.video %}
 <h4 class="headboard">media</h4>
@@ -52,8 +80,13 @@
 <p>{{ game.notes }}</p>
 {% endif %}
 
+{% endcomment %}
+
 </div>
 
+
+
+{% comment %}
 
 {% if game.series.count > 1 %}
 <div tab="series">
@@ -69,7 +102,7 @@
 </div>
 {% endif %}
 
-</div>
+{% endcomment %}
 
 
 </div>

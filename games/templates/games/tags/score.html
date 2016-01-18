@@ -1,0 +1,37 @@
+<div id="game_score">
+
+  <div id="team_results">
+
+
+    <div class="team_data">
+      <div class="team"><a href="{% url 'team_detail' game.team1.slug %}">{{ game.team1_original_name  }}</a></div>
+      {# <div><a href="{% url 'team_season_detail' game.team1.slug game.competition.slug game.season.slug %}">{{ game.season.name }}</a></div> #}
+      <div class="score">{{ game.team1_score_or_result }}</div>
+
+      {% if game.home_standings_string %}
+      <div>
+        {% if game.team1_previous_game %}<a href="{% url 'game_detail' game.team1_previous_game.id %}">←</a>{% endif %}
+        <a href="{% url 'season_detail' game.competition.slug game.season.slug %}">{{ game.home_standings_string  }}</a>
+        {% if game.team1_next_game %}<a href="{% url 'game_detail' game.team1_next_game.id %}">→</a>{% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="team_data">
+      <div class="team"><a href="{% url 'team_detail' game.team2.slug %}">{{ game.team2_original_name  }}</a></div>
+      {# <div><a href="{% url 'team_season_detail' game.team2.slug game.competition.slug game.season.slug %}">{{ game.season.name }}</a></div> #}
+      <div class="score">{{ game.team2_score_or_result }}</div>
+      {% if game.away_standings_string %}
+      <div>
+        {% if game.team2_previous_game %}<a href="{% url 'game_detail' game.team2_previous_game.id %}">←</a>{% else %}←{% endif %}
+        <a href="{% url 'season_detail' game.competition.slug game.season.slug %}">{{ game.away_standings_string  }}</a>
+        {% if game.team2_next_game %}<a href="{% url 'game_detail' game.team2_next_game.id %}">→</a>{% else %}→{% endif %}
+      </div>
+
+      {% endif %}
+    </div>
+
+    {% if game.forfeit %}<h3>Forfeit</h3>{% endif %}
+
+  </div>
+</div>
