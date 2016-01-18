@@ -39,20 +39,10 @@
 {% endif %}
 
 
-{% if game.gamestat_set.exists %}
-{% include "templatetags/games/detail/gamestats.html"  %}
 
 
-{% else %}
+{% include "games/gamestats.html"  %}
 
-
-
-{% if game.appearance_set.exists %}
-{% include "templatetags/games/detail/lineup.html"  %}
-
-{% endif %}
-
-{% endif %}
 
 
 

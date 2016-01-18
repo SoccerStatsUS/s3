@@ -70,6 +70,11 @@ def load1():
     load_events()
 
 
+def load3():
+    load_game_stats()
+
+
+
 def load4():
     #load_news();
     # Consider loading stats last so that we can generate 
@@ -644,7 +649,7 @@ def load_games():
 
 
 
-@timer
+#@timer
 @transaction.atomic
 def load_stats():
     print("\nloading stats\n")
@@ -881,6 +886,108 @@ def load_assists():
     print(len(assists))
     insert_sql('goals_assist', assists)
 
+
+
+#@timer
+@transaction.atomic
+def load_game_stats():
+    print("\nloading game stats\n")
+
+    team_getter = make_team_getter()
+    bio_getter = make_bio_getter()
+    source_getter = make_source_getter()
+    game_getter = make_game_getter()
+    gid_getter = make_gid_getter()
+    game_result_getter = make_game_result_getter()
+
+    birthdate_dict = dict(Bio.objects.exclude(birthdate=None).values_list("id", "birthdate"))
+    
+    print("\nprocessing")
+
+    l = []    
+    i = 0
+    for i, stat in enumerate(soccer_db.gstats.find(timeout=False)): # no timeout because this query takes forever.
+        if i % 50000 == 0:
+            print(i)
+
+        if stat['player'] == '':
+            #import pdb; pdb.set_trace()
+            continue
+
+        
+        try:
+            bio_id = bio_getter(stat['player'])
+        except:
+            continue
+
+        if bio_id is None:
+            continue
+
+
+        bd = birthdate_dict.get(bio_id)
+        if stat['date'] and bd:
+            # Coerce bd from datetime.date to datetime.time
+            bdt = datetime.datetime.combine(bd, datetime.time())
+            age = (stat['date'] - bdt).days / 365.25
+        else:
+            age = None
+
+        team_id = team_getter(stat['team'])
+
+
+        if 'gid' in stat:
+            game_id = gid_getter(stat['gid'])
+        else:
+            game_id = game_getter(team_id, stat['date'])
+
+        #game_id = game_getter(team_id, stat['date'])
+
+
+        result = game_result_getter(team_id, stat['date'])
+
+        if game_id is None or team_id is None:
+            continue
+
+
+        def c2i(key, coerce_none=True):
+            # Coerce an integer
+
+            if key in stat and stat[key] != None:
+                if type(stat[key]) != int:
+                    import pdb; pdb.set_trace()
+                return stat[key]
+
+            elif key in stat and stat[key] == None:
+                return 0
+
+            else:
+                return None
+
+        l.append({
+            'player_id': bio_id,
+            'team_id': team_id,
+            'game_id': game_id,
+            'games_started': c2i('games_started'),
+            'games_played': c2i('games_played'),
+            'minutes': c2i('minutes'),
+            'goals': c2i('goals'),
+            'assists': c2i('assists'),
+            'shots': c2i('shots'),
+            'shots_on_goal': c2i('shots_on_goal'),
+            'fouls_committed': c2i('fouls_committed'),
+            'fouls_suffered': c2i('fouls_suffered'),
+            'yellow_cards': c2i('yellow_cards'),
+            'red_cards': c2i('red_cards'),
+            'on': c2i('on', False),
+            'off': c2i('off', False),
+            'age': age,
+            'result': result,
+            })
+
+    print(i)
+
+
+    insert_sql("stats_gamestat", l)
 
 
 

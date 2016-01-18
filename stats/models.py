@@ -2,6 +2,7 @@ from django.db import models
 
 from bios.models import Bio
 from competitions.models import Competition, Season
+from games.models import Game
 from sources.models import Source
 from teams.models import Team
 
@@ -158,3 +159,54 @@ class Stat(AbstractStat):
     def __str__(self):
         return u"%s: %s/%s/%s" % (self.player, self.competition, self.season.name, self.team)
 
+
+class GameStat(AbstractStat):
+    player = models.ForeignKey(Bio)
+    game = models.ForeignKey(Game)
+    team = models.ForeignKey(Team)
+
+    age = models.FloatField(null=True) # Age in years at the time of game.
+    on = models.IntegerField(null=True)
+    off = models.IntegerField(null=True)
+
+    # What order the player is the lineup. (Matt Reis, Avery John, Michael Parkhurst) -> Michael Parkhurst, 3
+    order = models.IntegerField(null=True)
+
+    result = models.CharField(max_length=5)
+
+
+    class Meta:
+        ordering = ('game', 'order', 'on', '-id' )
+        pass
+
+
+    def score_or_result(self):
+        if self.team == self.game.team1:
+            return self.game.score_or_result()
+        else:
+            return self.game.reverse_score_or_result()
+
+    @property
+    def goal_differential(self):
+        try:
+            return self.goals_for - self.goals_against
+        except:
+            return None
+
+    def opponent(self):
+        if self.team == self.game.team1:
+            return self.game.team2
+        else:
+            return self.game.team1
+
+    def team_original_name(self):
+        if self.team == self.game.team1:
+            return self.game.team1_original_name
+        else:
+            return self.game.team2_original_name
+
+    def opponent_original_name(self):
+        if self.team == self.game.team1:
+            return self.game.team2_original_name
+        else:
+            return self.game.team1_original_name

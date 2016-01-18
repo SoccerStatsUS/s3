@@ -10,6 +10,16 @@ from teams.models import Team
 
 
 
+def pad_list(l, length):
+    # Return a list of length length.
+    if len(l) >= length:
+        return l
+    else:
+        diff = length - len(l)
+        return l + [None] * diff
+
+
+
 class GameManager(models.Manager):
 
 
@@ -78,6 +88,21 @@ class GameManager(models.Manager):
             key2 = (t2, dt)
             d[key2] = eid
         return d
+
+
+
+    def result_dict(self):
+        """
+        Returns a dict mapping a team/date combination to a game id.
+        """
+        d = {}
+        for dt, t1id, t2id, t1r, t2r in self.get_queryset().values_list('date', 'team1', 'team2', 'team1_result', 'team2_result'):
+            key = (t1id, dt)
+            d[key] = t1r
+            key2 = (t2id, dt)
+            d[key2] = t2r
+        return d
+
 
 
 class Game(models.Model):
