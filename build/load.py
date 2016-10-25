@@ -380,8 +380,15 @@ def load_bios():
     #for coll, key in fields:
     #    names.update([e[key] for e in soccer_db[coll].find()])
 
+    print("bios")
+    print(soccer_db.bios.count())
+
+    #import pdb; pdb.set_trace()
+
     # Load bios.
     for bio in soccer_db.bios.find().sort('name', 1):
+
+        #import pdb; pdb.set_trace()
 
         #if bio['name'] not in names:
             #print("Skipping %s" % bio['name'])
@@ -416,6 +423,10 @@ def load_bios():
         if bd['hall_of_fame'] not in (True, False):
             bd['hall_of_fame'] = False
         """
+
+        if bio.get('name') == 'Mauro Diaz':
+            import pdb; pdb.set_trace()
+        x = 5
 
         Bio.objects.create(**bd)
 

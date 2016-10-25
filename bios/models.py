@@ -109,9 +109,16 @@ class Bio(models.Model):
     deathdate = models.DateField(null=True, blank=True)
     deathplace = models.ForeignKey('places.City', null=True, blank=True, related_name='death_set')
 
+
     height = models.IntegerField(null=True, blank=True)
     weight = models.IntegerField(null=True, blank=True)
 
+    # these should be a many-to-many associated with specific dates.
+    #hometown = models.ForeignKey('places.City', null=True, blank=True, related_name='birth_set') 
+    #position = models.ForeignKey('positions.Position', null=True, blank=True, related_name='birth_set') 
+    #position = models.CharField('positions.Position', null=True, blank=True, related_name='birth_set') 
+
+    # what is this??
     #awards = generic.GenericRelation('awards.AwardItem')
     #images = generic.GenericRelation('images.Image')
 

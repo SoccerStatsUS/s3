@@ -116,7 +116,7 @@ def competition_detail(request, competition_slug):
 
     context = {
         'competition': competition,
-        'stats': sx,
+        #'stats': sx,
         #'games': recent_games.select_related()[:25],
         'games': games,
         #'big_winners': competition.alltime_standings().order_by('-wins')[:50],
@@ -124,6 +124,16 @@ def competition_detail(request, competition_slug):
         }
     return render(request, 
                   "competitions/detail.html",
+                  context)
+
+
+
+#@cache_page(60 * 60 * 12)
+def competition_games(request, competition_slug):
+    competition = get_object_or_404(Competition, slug=competition_slug)
+
+    return render(request, 
+                  "competitions/games.html",
                   context)
 
 
@@ -150,58 +160,5 @@ def season_detail(request, competition_slug, season_slug):
     Detail for a given season, e.g. Major League Soccer, 1996.
     """
 
-    competition = get_object_or_404(Competition, slug=competition_slug)
-    season = get_object_or_404(Season, competition=competition, slug=season_slug)
-
-    stats = Stat.objects.filter(season=season, competition=season.competition)
-    if stats.exclude(minutes=None).exists():
-        stats = stats.exclude(minutes=None).order_by('-minutes')
-    elif stats.exclude(games_played=None).exists():
-        stats = stats.exclude(games_played=None).order_by('-games_played')
-    elif stats.exclude(goals=None).exists():
-        stats = stats.exclude(goals=None).order_by('-goals')
-    else:
-        pass
-
-
-    bios = Bio.objects.filter(id__in=stats.values_list('player'))
-    nationality_count_dict = Counter(bios.exclude(birthplace__country=None).values_list('birthplace__country'))
-
-    """
-    # Compute average attendance.
-    games = season.game_set.exclude(attendance=None)
-    attendance_game_count = games.count()
-    average_attendance = games.aggregate(Avg('attendance'))['attendance__avg']
-
-    goal_leaders = stats.exclude(goals=None).order_by('-goals')
-    game_leaders = stats.exclude(games_played=None).order_by('-games_played')
-
-
-    recent_games = season.game_set.exclude(date__gte=datetime.date.today()).order_by('-date')
-    if not recent_games.exists():
-        recent_games = season.game_set.order_by('-date')
-    """
-
-    
-
-    context = {
-        'season': season,
-        'standings': season.standing_set.filter(final=True),
-        }
-    """
-        'stats': stats[:25],
-        'goal_leaders': goal_leaders[:10],
-        'game_leaders': game_leaders[:10],
-        'average_attendance': average_attendance,
-        'attendance_game_count': attendance_game_count,
-        'recent_games': recent_games[:25],
-        'awards': season.awarditem_set.order_by('award'),
-        'stats_nationality_info': json.dumps(season.stats_nationality_info()),
-        }
-    """
-
-    return render(request, 
-                  "season/detail.html",
-                  context)
-
-
+    return render(request, "season/detail.html", {})
+                  

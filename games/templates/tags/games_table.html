@@ -47,7 +47,6 @@
 
 
 
-    {% comment %}
 
     {% if 'referee' not in exclude %}
     {% if game.referee %}
@@ -62,8 +61,6 @@
     {% endif %}
 
     <td>{{ game.sources.count }}</td>
-
-    {% endcomment %}
 
   </tr>
   {% endfor %}

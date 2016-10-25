@@ -12,6 +12,8 @@
 
 <div id="game_top">
 
+  <div id="left_side">
+
   {% comment %}
   <h3>
     {% if game.season_previous_game %}<a href="{% url 'game_detail' game.season_previous_game.id %}">←</a>{% endif %}
@@ -19,11 +21,23 @@
   </h3>
   {% endcomment %}
 
+  <a href="{% url 'season_detail' game.competition.slug game.season.slug %}">{{ game.season.name }}</a>
+  <a href="{% url 'competition_detail' game.competition.slug %}">{{ game.competition }}</a> 
 
-    <a href="{% url 'competition_detail' game.competition.slug %}">{{ game.competition }}</a> - <a href="{% url 'season_detail' game.competition.slug game.season.slug %}">{{ game.season.name }}</a>
+  {% if game.group %}
+    Group {{ game.group }}
+  {% endif %}
 
-    {% if game.date %}<a href="{% url 'date_detail' game.date.year game.date.month game.date.day %}">{{ game.date|date:"l, F d, Y" }}</a>{% endif %}
+  {% if game.round %}
+    round {{ game.round }}
+  {% endif %}
 
+
+
+  </div>
+
+  <div id="right_side">
+    {% comment %}
     {% if game.stadium.slug %}
     <a href="{% url 'stadium_detail' game.stadium.slug %}">
       {% if game.stadium.short_name %}{{ game.stadium.short_name }}{% else %}{{ game.stadium.name }}{% endif %}
@@ -31,6 +45,13 @@
     {% else %}
     {% if game.location %}{{ game.location }}{% endif %}
     {% endif %}
+    {% endcomment %}
+
+
+    {% if game.date %}<a href="{% url 'date_detail' game.date.year game.date.month game.date.day %}">{{ game.date|date:"l, F d, Y" }}</a>{% endif %}
+    at
+    {% if game.stadium.short_name %}{{ game.stadium.short_name }}{% else %}{{ game.stadium.name }}{% endif %}
+  </div>
 
 </div>
 
@@ -39,16 +60,9 @@
 
   <div id="game_details">
     <ul>
-  {% if game.group %}
-    <li>group {{ game.group }}</li>
-  {% endif %}
-
-  {% if game.round %}
-    <li>round {{ game.round }}</li>
-  {% endif %}
 
     {% if game.referee %}
-    <li>referre:<a href="{% url 'person_detail' game.referee.slug %}">{{ game.referee }}</a></li>
+    <li>referee:<a href="{% url 'person_detail' game.referee.slug %}">{{ game.referee }}</a></li>
     {% endif %}
 
     {% if game.attendance %}

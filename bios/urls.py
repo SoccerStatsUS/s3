@@ -12,5 +12,8 @@ urlpatterns = [
         views.person_detail,
         name='person_detail'),
 
+    url(r'^(?P<slug>[a-z0-9-]+)/games/$',
+        views.person_games,
+        name='person_games'),
 
 ]

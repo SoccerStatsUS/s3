@@ -5,7 +5,7 @@ import json
 from django.shortcuts import render, get_object_or_404
 
 from games.models import Game
-from stats.models import TeamStat
+from stats.models import TeamStat, Stat
 from teams.models import Team
 
 
@@ -56,7 +56,6 @@ def team_detail(request, team_slug):
 
 
     stats = TeamStat.objects.filter(team=team)
-    """
 
     goal_leaders = game_leaders = None
     if stats.exclude(games_played=None).exists():
@@ -74,7 +73,7 @@ def team_detail(request, team_slug):
 
 
     draftees = team.former_team_set.exclude(player=None).order_by('-draft__season', 'number')[:10]
-    """
+
 
     recent_games = team.game_set().filter(date__lt=today).order_by('-date').select_related()[:10]
     if recent_games.count() == 0:
@@ -106,7 +105,7 @@ def team_detail(request, team_slug):
         'team': team,
         #'awards': awards,
         'stats': stats[:15],
-        #'stats': stats,
+        'stats': stats,
         'recent_games': recent_games,
         }
     """
@@ -199,3 +198,16 @@ def team_games(request, team_slug):
         }
 
     return render(request, "teams/games.html", context)
+
+
+
+def team_stats(request, team_slug):
+
+    team = get_object_or_404(Team, slug=team_slug)
+
+    context = {
+        'team': team,
+        'stats': team.teamstat_set.all(),
+    }
+
+    return render(request, "teams/stats.html", context)

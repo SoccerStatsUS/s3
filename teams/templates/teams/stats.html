@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load datum_or_none %}
+{% load games %}
+{% load stats %}
+
+{% block title %}{{ team.name }} All-time Game Results{% endblock %}
+{% block metadescription %}All-time game results for {{ team.name }}{% endblock %}
+
+{% block content %}
+
+{% stats_table team.teamstat_set.all 'team' %}
+
+
+
+
+
+{% endblock %}

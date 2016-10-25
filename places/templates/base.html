@@ -6,9 +6,9 @@
 <html>
 
 <head>
-  <title>{% block title %}All-time American soccer statistics{% endblock %} | SoccerStats.us </title>
+  <title>{% block title %}All-time American soccer statistics{% endblock %} | GarberBucks.com </title>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-  <meta name="Description" content="United States Men's National Soccer team statistics and history">
+  <meta name="Description" content="MLS statistics and history">
 
   <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
 
@@ -19,10 +19,22 @@
 
 
 <img height="50" widt="50" src="{% static 'ussoccer.jpg' %}" />
-<span id="title"><a href="{% url 'homepage' %}">USMNTstats.com</a></span>
+<span id="title"><a href="{% url 'homepage' %}">GarberBucks.com</a></span>
 
 
       {% block content %}{% endblock %}
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-370829-12', 'auto');
+  ga('send', 'pageview');
+
+</script>
 
 </body>
 

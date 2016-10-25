@@ -11,6 +11,11 @@ urlpatterns = [
                            views.competition_detail,
                            name='competition_detail'),
 
+                       url(r'^(?P<competition_slug>[a-z0-9-]+)/games/$',
+                           views.competition_games,
+                           name='competition_games'),
+
+
                        url(r'^superseason/(?P<superseason_slug>[a-z0-9-]+)/$',
                            views.superseason_detail,
                            name='superseason_detail'),

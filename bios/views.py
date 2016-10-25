@@ -54,7 +54,7 @@ def person_detail_abstract(request, bio):
     context = {
         "bio": bio,
 
-        #'recent_game_stats': bio.gamestat_set.order_by('game')[:10],
+        'recent_game_stats': bio.gamestat_set.order_by('game')[:10],
         'league_stats': league_stats,
         'domestic_stats': domestic_stats,
         'international_stats': international_stats,
@@ -70,4 +70,17 @@ def person_detail_abstract(request, bio):
 
     return render(request, 
                   "bios/detail.html",
+                  context)
+
+
+
+def person_games(request, slug):
+    bio = get_object_or_404(Bio, slug=slug)
+
+    context = {
+        'game_stats': bio.gamestat_set.all(),
+    }
+    
+    return render(request, 
+                  "bios/games.html",
                   context)

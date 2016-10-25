@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% load games %}
+{% load stats %}
+
+{% block title %}{{ bio.name }}{% endblock %}
+{% block metadescription %}Bio and career statistics for {{ bio.name }} including game results, goals scored, awards...{% endblock %}
+
+{% block extrahead %}
+
+<script type="text/javascript">
+  $(document).ready(function (){
+  });
+</script>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+{% if game_stats %}
+
+{{ game_stats.count }}
+
+<div tab="games">
+{% game_stats_table game_stats %}
+</div>
+{% endif %}
+
+
+{% endblock %}
+
+
+

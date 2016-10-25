@@ -95,7 +95,6 @@ class Competition(AbstractCompetition):
         return "".join(first_letters)
 
 
-
 class CompetitionRelationship(models.Model):
     before = models.ForeignKey('Competition', related_name='before')
     after = models.ForeignKey('Competition', related_name='after')
