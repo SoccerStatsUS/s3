@@ -60,9 +60,18 @@
 <div tab="games">
 {% game_stats_table recent_game_stats 'player,games_played,goals' %} 
 </div>
+
+<a href="{% url 'person_games' bio.slug %}">all games played</a>
 {% endif %}
 
-<a href="{% url 'person_games' bio.slug %}">all games</a>
+
+{% if refs %}
+<div tab="referee">
+{% games_table refs "referee," %}
+{# <a href="{% url 'person_detail_referee_games' bio.slug %}">all games refereed</a> #}
+</div>
+{% endif %}
+
 
 
 </div>

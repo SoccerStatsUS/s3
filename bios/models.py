@@ -143,6 +143,16 @@ class Bio(models.Model):
             
         super(Bio, self).save(*args, **kwargs)
 
+    def ref_set(self):
+        from games.models import Game
+        return Game.objects.filter(referee=self)
+
+    def assistant_ref_set(self):
+        from games.models import Game
+        query = models.Q(linesman3=self) | models.Q(linesman2=self) | models.Q(linesman3=self)
+        return Game.objects.filter(query)
+
+
 
 
     def career_stat(self):

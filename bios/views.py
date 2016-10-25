@@ -64,7 +64,7 @@ def person_detail_abstract(request, bio):
         #'picks': bio.pick_set.exclude(draft__competition=None).order_by('draft__season', 'draft__start'),
         #'coach_stats': bio.coachstat_set.order_by('season'),
         #'positions': bio.position_set.order_by('start'),
-        #'refs': bio.ref_set()[:10]
+        'refs': bio.ref_set()[:10]
         }
 
 
