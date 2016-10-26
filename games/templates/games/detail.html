@@ -6,8 +6,16 @@
 
 {# {% load games %} #}
 
+{% load staticfiles %}
+
 
 <div id="game_block">
+
+
+  <img height="30" width="30" src="{% static 'icons/goal.png' %}" />
+  <img height="30" width="30" src="{% static 'icons/substitution.png' %}" />
+  <img height="30" width="30" src="{% static 'icons/yellow_card.png' %}" />
+  <img height="30" width="30" src="{% static 'icons/red_card.png' %}" />
 
 
 <div id="game_top">
@@ -61,13 +69,25 @@
   <div id="game_details">
     <ul>
 
-    {% if game.referee %}
-    <li>referee:<a href="{% url 'person_detail' game.referee.slug %}">{{ game.referee }}</a></li>
+    {% if game.attendance %}
+    <li>attendance: <span class="large">{{ game.attendance }}</span></li>
     {% endif %}
 
-    {% if game.attendance %}
-    <li>attendance: {{ game.attendance }}</li>
+    {% if game.referee %}
+    <li>referee:<a href="{% url 'person_detail' game.referee.slug %}">{{ game.referee }}</a></li>
+    {% if game.linesman1 %}
+    <li>assistants: 
+      <div class="small">
+	<ul>
+	  <li>{{ game.linesman1 }}</li>
+	  {% if game.linesman2 %}<li>{{ game.linesman2 }}</li>{% endif %}
+	  {% if game.linesman3 %}<li>{{ game.linesman3 }}</li>{% endif %}
+	</ul>
+      </div>
+      {% endif %}
     {% endif %}
+
+
     </ul>
   </div>
 

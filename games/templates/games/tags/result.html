@@ -1,5 +1,5 @@
 {% load datum_or_none %}
-
+{% load staticfiles %}
 
 
 <div class="clear_both"></div>
@@ -14,15 +14,21 @@
 
     {% if goal.team == game.team1 %}
     <td class="left_goal">{% include "fragments/goal.html"  %}</td>
+
     {% else %}
+
     <td class="greybg"></td>
+
     {% endif %}
 
+    <td><img height="30" width="30" src="{% static 'icons/goal.png' %}" /></td>
     {% datum_or_grey goal.minute %}
+
 
     {% if goal.team == game.team2 %}
     <td class="right_goal">{% include "fragments/goal.html"  %}</td>
     {% else %}
+
     <td class="greybg"></td>
     {% endif %}
 

@@ -67,12 +67,10 @@ def team_detail(request, team_slug):
         pass
 
 
-    competition_standings = Standing.objects.filter(team=team, season=None).order_by('-wins')
-    league_standings = Standing.objects.filter(team=team, season__competition__ctype='League').filter(final=True).reverse()
-    recent_picks = team.pick_set.exclude(player=None).order_by('-draft__season', 'number')[:10]
-
-
-    draftees = team.former_team_set.exclude(player=None).order_by('-draft__season', 'number')[:10]
+    #competition_standings = Standing.objects.filter(team=team, season=None).order_by('-wins')
+    #league_standings = Standing.objects.filter(team=team, season__competition__ctype='League').filter(final=True).reverse()
+    #recent_picks = team.pick_set.exclude(player=None).order_by('-draft__season', 'number')[:10]
+    #draftees = team.former_team_set.exclude(player=None).order_by('-draft__season', 'number')[:10]
 
 
     recent_games = team.game_set().filter(date__lt=today).order_by('-date').select_related()[:10]
@@ -105,7 +103,6 @@ def team_detail(request, team_slug):
         'team': team,
         #'awards': awards,
         'stats': stats[:15],
-        'stats': stats,
         'recent_games': recent_games,
         }
     """

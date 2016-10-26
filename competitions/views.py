@@ -1,5 +1,6 @@
 from collections import defaultdict, Counter
 
+from django.db.models import Sum, Avg
 from django.shortcuts import render, get_object_or_404
 
 from .forms import CompetitionForm
@@ -160,5 +161,69 @@ def season_detail(request, competition_slug, season_slug):
     Detail for a given season, e.g. Major League Soccer, 1996.
     """
 
-    return render(request, "season/detail.html", {})
+    from stats.models import Stat
+    from bios.models import Bio
+
+    competition = get_object_or_404(Competition, slug=competition_slug)
+    season = get_object_or_404(Season, competition=competition, slug=season_slug)
+
+    stats = Stat.objects.filter(season=season, competition=season.competition)
+    if stats.exclude(minutes=None).exists():
+        stats = stats.exclude(minutes=None).order_by('-minutes')
+    elif stats.exclude(games_played=None).exists():
+        stats = stats.exclude(games_played=None).order_by('-games_played')
+    elif stats.exclude(goals=None).exists():
+        stats = stats.exclude(goals=None).order_by('-goals')
+    else:
+        pass
+
+
+    bios = Bio.objects.filter(id__in=stats.values_list('player'))
+    nationality_count_dict = Counter(bios.exclude(birthplace__country=None).values_list('birthplace__country'))
+
+    # Compute average attendance.
+    games = season.game_set.exclude(attendance=None)
+    attendance_game_count = games.count()
+    average_attendance = games.aggregate(Avg('attendance'))['attendance__avg']
+
+    goal_leaders = stats.exclude(goals=None).order_by('-goals')
+    game_leaders = stats.exclude(games_played=None).order_by('-games_played')
+
+    context = {
+        'season': season,
+        #'standings': season.standing_set.filter(final=True),
+        'games': games[:10],
+        'stats': stats[:25],
+        'goal_leaders': goal_leaders[:10],
+        'game_leaders': game_leaders[:10],
+        'average_attendance': average_attendance,
+        'attendance_game_count': attendance_game_count,
+        }
+
+    return render(request, "season/detail.html", context)
                   
+
+
+#@cache_page(60 * 60 * 12)
+def season_stats(request, competition_slug, season_slug):
+    """
+    Detail for a given season, e.g. Major League Soccer, 1996.
+    """
+
+    from stats.models import Stat
+    from bios.models import Bio
+
+    competition = get_object_or_404(Competition, slug=competition_slug)
+    season = get_object_or_404(Season, competition=competition, slug=season_slug)
+
+    stats = Stat.objects.filter(season=season, competition=season.competition)
+
+
+
+    context = {
+        'season': season,
+        'stats': stats,
+        }
+
+    return render(request, "season/stats.html", context)
+         

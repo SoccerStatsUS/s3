@@ -19,9 +19,13 @@
 
 {% block content %}
 
-{% include "bios/helpers/summary.html" %}
+<h2>{{ bio.name }}</h2>
 
 <table>
+<tr>
+  <td>{{ bio.height }} cm</td>
+  <td>{{ bio.weight }} kg</td>
+</tr>
 <tr>
   <td>birthplace:</td>
   <td>{{ bio.birthplace.name }}</td>
@@ -34,10 +38,7 @@
   <td>hometown:</td>
   <td>{{ bio.hometown }}</td>
 </tr>
-<tr>
-  <td>{{ bio.height }} cm</td>
-  <td>{{ bio.weight }} kg</td>
-</tr>
+
 <tr>
 
 </tr>
