@@ -22,5 +22,4 @@ class Transaction(models.Model):
     team_from = models.ForeignKey(Team, related_name="transactions_from", null=True)
     team_to = models.ForeignKey(Team, related_name="transactions_to", null=True)
 
-
     objects = TransactionManager()    

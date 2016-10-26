@@ -5,4 +5,18 @@
 {% block content %}
 
 
+<table>
+
+{% for transaction in transactions|slice:":100" %}
+<tr>
+<td>{{ transaction.ttype }}</td>
+<td>{{ transaction.date }}</td>
+<td>{{ transaction.person }}</td>
+<td>{{ transaction.team_to }}</td>
+</tr>
+{% endfor %}
+</table>
+
+
+
 {% endblock %}

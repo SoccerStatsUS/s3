@@ -39,10 +39,20 @@
   <td>{{ bio.hometown }}</td>
 </tr>
 
-<tr>
-
-</tr>
 </table>
+
+<div>
+transactions
+{% for transaction in bio.transaction_set.all %}
+<table>
+  <tr>
+    <td><a href="{% url 'transaction_detail' transaction.id %}">{{ transaction.id }}</a></td>
+    <td>{{ transaction.date }}</td>
+    <td>{{ transaction.ttype}}</td>
+    <td>{{ transaction.team_to }}</td>
+</table>
+{% endfor %}
+</div>
 
 
 <div tab="stats">
