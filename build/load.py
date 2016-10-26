@@ -61,6 +61,10 @@ def load1():
     load_stadiums()
     load_bios()
 
+    load_transactions()
+
+
+
 
     #load_salaries()
 
@@ -142,6 +146,47 @@ def load_sources():
                     'url': surl,
                     })
         
+
+
+
+
+def load_transactions():
+
+    print("\n loading {} transactions\n".format(soccer_db.transactions.count()))
+
+    transactions = []
+
+    print("\nloading {} transactions\n".format(soccer_db.positions.count()))
+    for t in soccer_db.transactions.find():
+        try:
+            t.pop('_id')
+
+            if t.get('team_from'):
+                team_from = Team.objects.find(t['team_from'], create=True)
+                team_from_id = team_from.id
+            else:
+                team_from_id= None
+
+            if t.get('team_to'):
+                team_to = Team.objects.find(t['team_to'], create=True)
+                team_to_id = team_to.id
+            else:
+                team_to_id = None
+
+            person = Bio.objects.find(t['person'])
+
+            transactions.append({
+                'ttype': t['ttype'],
+                'person_id': person.id,
+                'team_to_id': team_to_id,
+                'team_from_id': team_from_id,
+                'date': t['date'],
+                })
+        except:
+            import pdb; pdb.set_trace()
+
+    insert_sql("transactions_transaction", transactions)
+
 
 
 @transaction.atomic
