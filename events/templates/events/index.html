@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}team directory{% endblock %}
+
+{% block content %}
+
+
+<table>
+
+{% for event in events|slice:":100" %}
+<tr>
+<td>{{ event.id }}</td>
+<td>{{ event.subject }}</td>
+<td>{{ event.object }}</td>
+<td>{{ event.minute }}</td>
+<td>{{ event.game }}</td>
+
+</tr>
+{% endfor %}
+</table>
+
+
+
+{% endblock %}

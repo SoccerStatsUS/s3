@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'sources',
     'bios',
     'competitions',
+    'events',
     'games',
     'goals',
     'organizations',
