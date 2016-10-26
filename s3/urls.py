@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^bios/', include('bios.urls')),
     url(r'^competitions/', include('competitions.urls')),
     url(r'^dates/', include('dates.urls')),
+    url(r'^events/', include('events.urls')),
     url(r'^games/', include('games.urls')),
     url(r'^places/', include('places.urls')),
     url(r'^organizations/', include('organizations.urls')),

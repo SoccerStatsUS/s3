@@ -1,9 +1,6 @@
 from collections import defaultdict, OrderedDict, Counter
 
-from django.shortcuts import render
-
 from django.shortcuts import render, get_object_or_404
-# Create your views here.
 
 from .models import Event
 
@@ -18,27 +15,7 @@ def event_index(request):
     # Need to broaden team standing generation so we use that
     # to pull all teams.
     
-    letters = 'abcdefghijklmnopqrstuvwxyz'.upper()
-
-    #name_dict = OrderedDict()
-
-    #standings = Standing.objects.filter(competition=None)
-
-    """
-    for letter in letters:
-        #teams = Team.objects.filter(name__istartswith=letter)
-        #team_standings = standings.filter(team__name__istartswith=letter)[:10]
-        #name_dict[letter] = team_standings
-        #name_dict[letter] = teams
-        pass
-    """
-        
-    #context = {
-    #    'name_dict': name_dict,
-    #    }
-
-    transactions = Transaction.objects.order_by('-date').select_related()
-    events = Event.objects.order_by('-date').select_related()
+    events = Event.objects.order_by('-game__date').select_related()
 
     context = {
         'events': events,
@@ -49,4 +26,12 @@ def event_index(request):
                   context)
 
 
-# Create your views here.
+
+def event_detail(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    context = {
+        'event': event,
+        }
+    return render(request, 
+                              "events/detail.html",
+                              context)

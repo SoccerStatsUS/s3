@@ -874,6 +874,22 @@ def load_goals():
 
     print(i)
     insert_sql('goals_goal', goals)
+
+    events = []
+    for goal in goals:
+        event = {
+            'game_id': game_id,
+            'team': team_id, 
+            'minute': goal['minute'],
+            'etype': 'goal',
+            'subject': goal['player_id'],
+            'object': None, 
+            'description': '',
+        }
+        events.append(event)
+
+    insert_sql('events_event', event)
+
         
 @timer
 @transaction.atomic
