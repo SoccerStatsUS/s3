@@ -5,7 +5,30 @@
 <div class="clear_both"></div>
 
 
+<table>
+events
+{% for event in game.event_set.all %}
+<tr>
+  <td><img height="30" width="30" 
+				       {% if event.etype == 'goal' %}
+				       src="{% static 'icons/goal.png' %}" />
+				       {% elif event.etype == 'red' %}
+				       src="{% static 'icons/red_card.png' %}" />
+				       {% else %}
+				       src="{% static 'icons/yellow_card.png' %}" />
+	                               {% endif %}
+				       </td>
+  {# <td>{{ event.etype }}</td> #}
+  <td>{{ event.minute }}</td>
+  <td>{{ event.subject }}</td>
+  <td>{{ event.team}}</td>
+
+{% endfor %}
+</table>
+
 {% if game.goal_set.exists %}
+
+
 
 <table id="goal_list" class="noborder">
 

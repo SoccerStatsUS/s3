@@ -1,6 +1,8 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 
+from collections import defaultdict
+
 
 class BioManager(models.Manager):
 

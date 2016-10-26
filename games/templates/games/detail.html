@@ -12,11 +12,6 @@
 <div id="game_block">
 
 
-  <img height="30" width="30" src="{% static 'icons/goal.png' %}" />
-  <img height="30" width="30" src="{% static 'icons/substitution.png' %}" />
-  <img height="30" width="30" src="{% static 'icons/yellow_card.png' %}" />
-  <img height="30" width="30" src="{% static 'icons/red_card.png' %}" />
-
 
 <div id="game_top">
 
@@ -66,7 +61,10 @@
 
 <div id="game_middle">
 
+
   <div id="game_details">
+
+
     <ul>
 
     {% if game.attendance %}
@@ -99,6 +97,14 @@
 {% include "games/tags/result.html" %}
 
 <div tab="detail" id="game-data">
+
+
+  <img height="30" width="30" src="{% static 'icons/goal.png' %}" />
+  <img height="30" width="30" src="{% static 'icons/substitution.png' %}" />
+  <img height="30" width="30" src="{% static 'icons/yellow_card.png' %}" />
+  <img height="30" width="30" src="{% static 'icons/red_card.png' %}" />
+
+
 
 {% comment %}
 
