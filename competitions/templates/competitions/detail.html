@@ -2,12 +2,11 @@
 {% load datum_or_none %}
 
 {% load stats %}
+{% load games %}
 
 {% comment %}
 {% load standings %}
 {% load seasons %}
-
-{% load games %}
 {% endcomment %}
 
 {% block title %}{{ competition.name }} Soccer History {% endblock %}
@@ -47,14 +46,14 @@
 
 {% endcomment %}
 
-{% comment %}
+
 
 <div tab="stats">
 {% stats_table stats 'team,season'%}
 </div>
 
 
-
+{% comment %}
 
 {% if big_winners %}
 <div tab="standings">
@@ -62,11 +61,13 @@
 </div>
 {% endif %}
 
+{% endcomment %}
+
 <div tab="games">
 {% games_table games 'competition,referee,attendance' %}
 </div>
 
-{% endcomment %}
+
 
 </div>
 

@@ -1,4 +1,6 @@
+
 from collections import defaultdict, Counter
+import datetime
 
 from django.db.models import Sum, Avg
 from django.shortcuts import render, get_object_or_404
@@ -93,33 +95,29 @@ def competition_index(request):
 
 #@cache_page(60 * 60 * 12)
 def competition_detail(request, competition_slug):
+
+    from stats.models import CompetitionStat
+
     competition = get_object_or_404(Competition, slug=competition_slug)
 
-    #games = competition.game_set.all()
-    games = []
 
-    stats = sx = []
-
-    """
     stats = CompetitionStat.objects.filter(competition=competition)
 
     if stats.exclude(games_played=None).exists():
-        sx = stats.exclude(games_played=None).order_by('-games_played', '-goals')[:25]
+        stats = stats.exclude(games_played=None).order_by('-games_played', '-goals')[:25]
     else:
-        sx = stats.exclude(games_played=None, goals=None).filter(competition=competition).order_by('-games_played', '-goals')[:25]
+        stats = stats.exclude(games_played=None, goals=None).filter(competition=competition).order_by('-games_played', '-goals')[:25]
 
+    games = competition.game_set
 
     recent_games = games.order_by('-date').exclude(date__gte=datetime.date.today()).exclude(date=None)
     if not recent_games.exists():
         recent_games = games.order_by('-date')
 
-    """
-
     context = {
         'competition': competition,
-        #'stats': sx,
-        #'games': recent_games.select_related()[:25],
-        'games': games,
+        'stats': stats,
+        'games': recent_games.select_related()[:25],
         #'big_winners': competition.alltime_standings().order_by('-wins')[:50],
         #'goal_data': json.dumps([(season.goals_per_game(), season.name) for season in competition.season_set.all()]),
         }
