@@ -13,7 +13,11 @@
 <td>{{ transaction.ttype }}</td>
 <td>{{ transaction.date }}</td>
 <td><a href="{% url 'person_detail' transaction.person.slug %}">{{ transaction.person }}</a></td>
-<td>{{ transaction.team_to }}</td>
+{% if transaction.team_to %}
+<td><a href="{% url 'team_detail' transaction.team_to.slug %}">{{ transaction.team_to }}</a></td>
+{% else %}
+<td></td>
+{% endif %}
 </tr>
 {% endfor %}
 </table>

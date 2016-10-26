@@ -37,7 +37,7 @@ def transaction_index(request):
     #    'name_dict': name_dict,
     #    }
 
-    transactions = Transaction.objects.order_by('-date').select_related()
+    transactions = Transaction.objects.exclude(date=None).order_by('-date').select_related()
 
     context = {
         'transactions': transactions,
