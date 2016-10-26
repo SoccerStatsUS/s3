@@ -2,7 +2,7 @@
 {% block title %}{{ stadium }}{% endblock %}
 
 {# {% load standings %} #}
-{# {% load games %} #}
+{% load games %}
 
 {% block content %}
 
@@ -77,7 +77,9 @@
 
 <div tab="games">
 
-{# {% games_table recent_games 'stadium' %} #}
+{% games_table recent_games 'stadium' %}
+
+<p><a href="{% url 'stadium_games' stadium.slug %}">all games</a></p>
 
 </div>
 

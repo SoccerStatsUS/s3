@@ -96,5 +96,16 @@
 {# {% games_table recent_games %} #}
 </div>
 
+<table>
+{% for transaction in transactions %}
+<tr>
+  <td><a href="{% url 'transaction_detail' transaction.id %}">{{ transaction.id }}</a></td>
+  <td>{{ transaction.ttype }}</td>
+  <td><a href="{% url 'person_detail' transaction.person.slug %}">{{ transaction.person }}</a></td>
+</tr>
+{% endfor %}
+</table>
+
+
 
 {% endblock %}

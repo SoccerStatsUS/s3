@@ -22,7 +22,7 @@ class Event(models.Model):
     description = models.CharField(max_length=255)
 
     subject = models.ForeignKey(Bio, related_name="event_committed")
-    object = models.ForeignKey(Bio, related_name="event_against")
+    object = models.ForeignKey(Bio, related_name="event_against", null=True)
 
 
     objects = EventManager()    

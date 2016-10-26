@@ -4,18 +4,21 @@
 
 {% block content %}
 
+{{ events.count }}
 
 <table>
 
 {% for event in events|slice:":100" %}
+
 <tr>
-<td>{{ event.id }}</td>
-<td>{{ event.subject }}</td>
+<td><a href="{% url 'event_detail' event.id %}">{{ event.id }}</a></td>
+<td>{{ event.etype }}</td>
+<td><a href="{% url 'person_detail' event.subject.slug %}">{{ event.subject }}</a></td>
 <td>{{ event.object }}</td>
 <td>{{ event.minute }}</td>
-<td>{{ event.game }}</td>
-
+<td><a href="{% url 'game_detail' event.game.id %}">{{ event.game.date }}</a></td>
 </tr>
+
 {% endfor %}
 </table>
 

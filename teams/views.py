@@ -104,6 +104,7 @@ def team_detail(request, team_slug):
         #'awards': awards,
         'stats': stats[:15],
         'recent_games': recent_games,
+        'transactions': team.transactions_to.all()[:10],
         }
     """
 

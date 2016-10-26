@@ -12,8 +12,9 @@ def homepage(request):
     Homepage
     """
 
-    team = Team.objects.get(slug='united-states')
-    games = Game.objects.team_filter(team).order_by("-date").exclude(date=None)[:20]
+    #team = Team.objects.get(slug='united-states')
+    #games = Game.objects.team_filter(team).order_by("-date").exclude(date=None)[:20]
+    games = Game.objects.order_by("-date").exclude(date=None)[:20]
 
     context = {
         'games': games,

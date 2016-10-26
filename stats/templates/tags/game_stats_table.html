@@ -59,6 +59,7 @@
   <td><a href="{% url 'team_detail' stat.team.slug %}">{{ stat.team }}</a></td>
   {% else %}<td></td>{% endif %}{% endif %}
 
+  {% comment %}
   {% if 'competition' not in exclude %}
   {% if stat.competition.slug %}
   <td class="bg-{{ stat.competition.code }}-{{ stat.competition.level }}">
@@ -68,6 +69,9 @@
   <td>{{ stat.competition.abbreviation }}</td>
   {% endif %}
   {% endif %}
+  {% endcomment %}
+  <td>{{ stat.game.competition.abbreviation }} </td>
+  <td>{{ stat.game.season.name }} </td>
 
   {% if 'season' not in exclude %}
   {% if stat.season.slug %}

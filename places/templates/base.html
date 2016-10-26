@@ -17,9 +17,13 @@
 
 <body>
 
-
-<img height="65" width="60" src="{% static 'icons/garber.png' %}" />
-<span id="title"><a href="{% url 'homepage' %}">GarberBucks.com</a></span>
+<div>
+<a href="{% url 'homepage' %}">
+<img height="110" width="100" src="{% static 'icons/garber.png' %}" />
+<h5 id="tt">garberbucks.com</h5>
+</a>
+</div>
+{# <span id="title">GarberBucks.com</a></span> #}
 
 
       {% block content %}{% endblock %}

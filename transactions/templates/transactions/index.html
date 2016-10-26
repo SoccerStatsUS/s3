@@ -9,9 +9,10 @@
 
 {% for transaction in transactions|slice:":100" %}
 <tr>
+<td><a href="{% url 'transaction_detail' transaction.id %}">{{ transaction.id }}</a></td>
 <td>{{ transaction.ttype }}</td>
 <td>{{ transaction.date }}</td>
-<td>{{ transaction.person }}</td>
+<td><a href="{% url 'person_detail' transaction.person.slug %}">{{ transaction.person }}</a></td>
 <td>{{ transaction.team_to }}</td>
 </tr>
 {% endfor %}

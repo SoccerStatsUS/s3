@@ -1,4 +1,15 @@
+#tt {
+    font-size: .8em;
+    margin: 0;
+    padding: 0;
+    color: #222;
 
+}
+
+#tt:hover {
+    text-decoration: underline;
+    //border: 5px solid black;
+}
 
 .small {
     font-size: .8em;

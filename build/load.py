@@ -63,9 +63,6 @@ def load1():
 
     load_transactions()
 
-
-
-
     #load_salaries()
 
     # Complex game data
@@ -110,8 +107,115 @@ def load_events():
     # passes and tackles would be the ultimate extension here.
 
     #load_substitutions()
+
+    load_fouls()
+
     load_goals()
     load_assists()
+
+
+
+@timer
+@transaction.atomic
+def load_drafts():
+    print("\nloading drafts\n")
+
+    competition_getter = make_competition_getter()
+    season_getter = make_season_getter()
+
+    team_getter = make_team_getter()
+
+    # Create the set of drafts.
+
+    """
+    for draft in soccer_db.drafts.find().sort('team', 1):
+        draft.pop('_id')
+
+        if draft['competition']:
+            competition_id = competition_getter(draft['competition'])        
+        else:
+            competition_id = None
+
+        season_id = season_getter(draft['season'], competition_id)
+
+        Draft.objects.create(**{
+                'name': draft['name'],
+                'season_id': season_id,
+                'competition_id': competition_id,
+                'start': draft.get('start'),
+                'end': draft.get('end'),
+                })
+    """
+
+    print("\nloading {} picks\n".format(soccer_db.picks.count()))
+                
+    # Create picks
+    picks = []
+    for pick in soccer_db.picks.find():
+
+        # draft, text, player, position, team
+
+        c = pick.get('competition')
+        if c:
+            competition_id = competition_getter(pick.get('competition'))
+        else:
+            competition_id = None
+
+        season_id = season_getter(pick.get('season'), competition_id)
+
+        #draft = Draft.objects.get(name=pick.get('draft'), competition_id=competition_id, season_id=season_id)
+        draft = None
+
+        if pick['team'] == 'Sean_Irish_LAGalaxy/Geneva':
+            pass #import pdb; pdb.set_trace()
+
+
+        team_id = team_getter(pick['team'])
+
+        if pick.get('former_team'):
+            former_team_id = team_getter(pick['former_team'])
+        else:
+            former_team_id = None
+
+        # Set the player reference.
+        text = pick['text']
+
+        # Draft picks were "drafted" in the MLS Allocation and Dispersal drafts.
+        if "SuperDraft" in text:
+            player_id = None
+        elif text.lower() == 'pass':
+            player_id = None
+        else:
+            player_id = Bio.objects.find(text).id
+
+        """
+        picks.append({
+                #'draft_id': draft.id,
+                'player_id': player_id,
+                'team_id': team_id,
+                'text': text,
+                'position': pick.get('position') or '',
+                'former_team_id': former_team_id,
+                'number': pick['number'],
+                })
+        """
+
+        picks.append({
+                #'draft_id': draft.id,
+            'ttype': 'draft pick',
+            'date': None, # fix this
+            'person_id': player_id,
+            'team_to_id': team_id,
+            'team_from_id': former_team_id,
+
+            #'text': text,
+            #'position': pick.get('position') or '',
+            #'number': pick['number'],
+                })
+
+
+    #insert_sql("drafts_pick", list(picks))
+    insert_sql("transactions_transaction", list(picks))
 
 
 
@@ -152,11 +256,10 @@ def load_sources():
 
 def load_transactions():
 
-    print("\n loading {} transactions\n".format(soccer_db.transactions.count()))
+    print("loading {} transactions".format(soccer_db.transactions.count()))
 
     transactions = []
 
-    print("\nloading {} transactions\n".format(soccer_db.positions.count()))
     for t in soccer_db.transactions.find():
         try:
             t.pop('_id')
@@ -424,11 +527,6 @@ def load_bios():
     # Add names to names field where they have been used.
     #for coll, key in fields:
     #    names.update([e[key] for e in soccer_db[coll].find()])
-
-    print("bios")
-    print(soccer_db.bios.count())
-
-    #import pdb; pdb.set_trace()
 
     # Load bios.
     for bio in soccer_db.bios.find().sort('name', 1):
@@ -802,6 +900,83 @@ def load_stats():
     insert_sql("stats_stat", l)
 
 
+def load_fouls():
+
+    print("loading fouls")
+    print(soccer_db.fouls.count())
+
+
+
+    team_getter = make_team_getter()
+    bio_getter = make_bio_getter()
+    game_getter = make_game_getter()
+    gid_getter = make_gid_getter()
+
+    l = []
+
+    def create_foul(foul):
+        
+        if foul['team'] is None:
+            return {}
+
+        team_id = team_getter(foul['team'])
+
+        bio_id = None
+
+        bio_id = bio_getter(foul['name'])
+
+        if foul['type'] == 'red':
+            ftype = 'red'
+        elif foul['type'] == 'yellow':
+            ftype = 'yellow'
+        else:
+            import pdb; pdb.set_trace()
+
+        if not foul['date']:
+            return {}
+
+        # Coerce to date to match dict.
+        d = datetime.date(foul['date'].year, foul['date'].month, foul['date'].day)
+
+        # Try gid first, fall back on team/date.
+        game_id = None
+
+        if 'gid' in foul:
+            game_id = gid_getter(foul['gid'])
+
+        if game_id is None:
+            game_id = game_getter(team_id, d)
+
+        if not game_id:
+            print("Cannot create %s" % goal)
+            return {}
+        else:
+            return {
+                'game_id': game_id, 
+                'team_id': team_id, 
+                'minute': foul['minute'],
+                
+                'etype': ftype,
+                #'team_original_name': '',
+
+                'subject_id': bio_id, #player,
+
+                'description': '',
+
+                }
+
+    i = 0 # if no goals.
+    fouls = []
+    for i, foul in enumerate(soccer_db.fouls.find()):
+        if i % 50000 == 0:
+            print(i)
+
+        f = create_foul(foul)
+        if f:
+            fouls.append(f)
+
+    insert_sql('events_event', fouls)
+
 
 @timer
 @transaction.atomic
@@ -814,6 +989,7 @@ def load_goals():
     gid_getter = make_gid_getter()
 
     l = []
+
 
     def create_goal(goal):
 
@@ -876,19 +1052,22 @@ def load_goals():
     insert_sql('goals_goal', goals)
 
     events = []
+
     for goal in goals:
         event = {
-            'game_id': game_id,
-            'team': team_id, 
+            'game_id': goal['game_id'],
+            'team_id': goal['team_id'],
             'minute': goal['minute'],
             'etype': 'goal',
-            'subject': goal['player_id'],
-            'object': None, 
+            'subject_id': goal['player_id'],
+            'object_id': None, 
             'description': '',
         }
-        events.append(event)
+        if goal['player_id']:
+            events.append(event)
 
-    insert_sql('events_event', event)
+
+    insert_sql('events_event', events)
 
         
 @timer

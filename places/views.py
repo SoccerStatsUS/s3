@@ -112,8 +112,23 @@ def stadium_detail(request, slug):
                 'attendance_game_count': attendance_game_count,
                 #'standings': standings,
                 'recent_games': stadium.game_set.all()[:25],
+                'games': games,
                 }
 
         return render(request, 
                       "places/stadium_detail.html",
+                      context)
+
+
+
+def stadium_games(request, slug):
+
+        stadium = get_object_or_404(Stadium, slug=slug)
+
+        context = {
+                'games': stadium.game_set.all(),
+        }
+
+        return render(request, 
+                      "places/stadium_games.html",
                       context)

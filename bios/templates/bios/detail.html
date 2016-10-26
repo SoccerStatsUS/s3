@@ -42,16 +42,35 @@
 </table>
 
 <div>
-transactions
-{% for transaction in bio.transaction_set.all %}
+events
+
 <table>
+{% for event in bio.event_committed.all|slice:":10" %}
+<tr>
+<td><a href="{% url 'event_detail' event.id %}">{{ event.id }}</a></td>
+<td>{{ event.etype }}</td>
+<td><a href="{% url 'person_detail' event.subject.slug %}">{{ event.subject }}</a></td>
+<td>{{ event.minute }}</td>
+<td><a href="{% url 'game_detail' event.game.id %}">{{ event.game.date }}</a></td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<div>
+transactions
+<table>
+{% for transaction in bio.transaction_set.all %}
+
   <tr>
     <td><a href="{% url 'transaction_detail' transaction.id %}">{{ transaction.id }}</a></td>
     <td>{{ transaction.date }}</td>
     <td>{{ transaction.ttype}}</td>
-    <td>{{ transaction.team_to }}</td>
-</table>
+    <td><a href="{% url 'team_detail' transaction.team_to.slug %}">{{ transaction.team_to }}</a></td>
+  </tr>
+
 {% endfor %}
+</table>
 </div>
 
 
