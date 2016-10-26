@@ -33,4 +33,5 @@ urlpatterns = [
     url(r'^organizations/', include('organizations.urls')),
     url(r'^sources/', include('sources.urls')),
     url(r'^teams/', include('teams.urls')),
+    url(r'^transactions/', include('transactions.urls')),
 ]
