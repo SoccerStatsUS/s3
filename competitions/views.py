@@ -131,6 +131,10 @@ def competition_detail(request, competition_slug):
 def competition_games(request, competition_slug):
     competition = get_object_or_404(Competition, slug=competition_slug)
 
+    context = {
+        'competition': competition,
+        }
+
     return render(request, 
                   "competitions/games.html",
                   context)
@@ -198,7 +202,7 @@ def season_detail(request, competition_slug, season_slug):
         'attendance_game_count': attendance_game_count,
         }
 
-    return render(request, "season/detail.html", context)
+    return render(request, "seasons/detail.html", context)
                   
 
 
@@ -223,5 +227,25 @@ def season_stats(request, competition_slug, season_slug):
         'stats': stats,
         }
 
-    return render(request, "season/stats.html", context)
+    return render(request, "seasons/stats.html", context)
          
+
+
+#@cache_page(60 * 60 * 12)
+def season_games(request, competition_slug, season_slug):
+    """
+    Detail for a given season, e.g. Major League Soccer, 1996.
+    """
+
+    competition = get_object_or_404(Competition, slug=competition_slug)
+    season = get_object_or_404(Season, competition=competition, slug=season_slug)
+
+    context = {
+        'season': season,
+        }
+
+    return render(request, 
+                  "seasons/games.html",
+                  context)
+
+

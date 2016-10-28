@@ -1,14 +1,8 @@
 {% extends "base.html" %}
 {% load datum_or_none %}
 
-{% load stats %}
-
-{% comment %}
-{% load standings %}
-{% load seasons %}
 
 {% load games %}
-{% endcomment %}
 
 {% block title %}{{ competition.name }} Soccer History {% endblock %}
 {% block metadescription %}Standings, results, player statistics, and awards for the {{ competition.name }}{% endblock %}
@@ -29,44 +23,7 @@
 
 <p>teams: </p>
 
-
-</div>
-
-<div id="tab_block">
-<ul id="tabs"></ul>
-</div>
-
-
-<div id="tab_wrapper">
-
-{% comment %}
-
-<div tab="seasons">
-{% seasons_table competition.season_set.reverse %}
-</div>
-
-{% endcomment %}
-
-{% comment %}
-
-<div tab="stats">
-{% stats_table stats 'team,season'%}
-</div>
-
-
-
-
-{% if big_winners %}
-<div tab="standings">
-{% standings_table big_winners 'competition,season' %}
-</div>
-{% endif %}
-
-<div tab="games">
-{% games_table games 'competition,referee,attendance' %}
-</div>
-
-{% endcomment %}
+{% games_table competition.game_set.all %}
 
 </div>
 

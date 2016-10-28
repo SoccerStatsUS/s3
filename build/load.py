@@ -61,6 +61,7 @@ def load1():
     load_stadiums()
     load_bios()
 
+    load_drafts()
     load_transactions()
 
     #load_salaries()
@@ -148,7 +149,9 @@ def load_drafts():
     """
 
     print("\nloading {} picks\n".format(soccer_db.picks.count()))
-                
+
+    #import pdb; pdb.set_trace()
+
     # Create picks
     picks = []
     for pick in soccer_db.picks.find():
@@ -201,9 +204,9 @@ def load_drafts():
         """
 
         picks.append({
-                #'draft_id': draft.id,
+            #'draft_id': draft.id,
             'ttype': 'draft pick',
-            'date': None, # fix this
+            'date': pick['date'],
             'person_id': player_id,
             'team_to_id': team_id,
             'team_from_id': former_team_id,
@@ -616,10 +619,15 @@ def load_games():
 
     for game in soccer_db.games.find().sort('date', 1):
 
+        if game.get('city') == 'Columbus Crew Stadium':
+            import pdb; pdb.set_trace()
+
         # Apply stadium / state / country information.
-        
+
         stadium_id = city_id = country_id = None
         if game.get('stadium'):
+
+            
             stadium_id = stadium_getter(game['stadium'])
             s = Stadium.objects.get(id=stadium_id)
             if s.city:

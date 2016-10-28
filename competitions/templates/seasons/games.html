@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load datum_or_none %}
+
+{% load games %}
+
+
+{% block title %}{{ competition.name }} Soccer History {% endblock %}
+{% block metadescription %}Standings, results, player statistics, and awards for the {{ competition.name }}{% endblock %}
+
+{% block content %}
+
+{% games_table season.game_set.all %}
+
+{% endblock %}

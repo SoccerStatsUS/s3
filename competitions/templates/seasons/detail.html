@@ -19,22 +19,6 @@
 
 {% block content %}
 
-<p>
-
-<p>competition: {{ season.competition }}</p>
-<p>superseason: {{ season.name }}</p>
-
-<div>
-<p>Attendance</p>
-<p>average attendance: {{ average_attendance|floatformat:"0" }}</p>
-<p>attendance_game_count: {{ attendance_game_count }}</p>
-</div>
-
-{% stats_table game_leaders 'competition,season,games_started,goals,assists,shots' %}
-{% stats_table goal_leaders 'competition,season,games_started,goals,assists,shots' %}
-
-{% games_table games %}
-
-</p>
+{% games_table season.game_set.all %}
 
 {% endblock %}

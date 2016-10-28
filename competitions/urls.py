@@ -29,5 +29,9 @@ urlpatterns = [
                            views.season_stats,
                            name='season_stats'),
 
+                       url(r'^(?P<competition_slug>[a-z0-9-]+)/(?P<season_slug>[a-z0-9-]+)/games/$',
+                           views.season_games,
+                           name='season_games'),
+
 
 ]
