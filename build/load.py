@@ -17,7 +17,8 @@ from django.template.defaultfilters import slugify
 
 
 
-connection = pymongo.Connection()
+# connection = pymongo.Connection()
+connection = pymongo.MongoClient()
 soccer_db = connection.soccer
 
 from bios.models import Bio
@@ -828,7 +829,8 @@ def load_stats():
 
     l = []    
     i = 0
-    for i, stat in enumerate(soccer_db.stats.find(timeout=False)): # no timeout because this query takes forever.
+    # for i, stat in enumerate(soccer_db.stats.find(timeout=False)): # no timeout because this query takes forever.
+    for i, stat in enumerate(soccer_db.stats.find(no_cursor_timeout=True)):
 
 
         if i % 50000 == 0:
@@ -1165,7 +1167,8 @@ def load_game_stats():
 
     l = []    
     i = 0
-    for i, stat in enumerate(soccer_db.gstats.find(timeout=False)): # no timeout because this query takes forever.
+    #for i, stat in enumerate(soccer_db.gstats.find(timeout=False)): # no timeout because this query takes forever.
+    for i, stat in enumerate(soccer_db.gstats.find(no_cursor_timeout=True)):        
         if i % 50000 == 0:
             print(i)
 

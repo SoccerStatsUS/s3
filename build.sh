@@ -4,11 +4,11 @@ export PGPASSWORD=ymctas
 # Need separate script for moving to prod?
 #source ~/.virtualenvs/sdev/bin/activate
 
-dropdb soccerstats_build
-createdb soccerstats_build --owner=soccerstats
-createdb soccerstats_backup --owner=soccerstats
-createdb soccerstats --owner=soccerstats
-createdb soccerstats_dev --owner=soccerstats
+dropdb soccerstats_build --username=soccerstats
+createdb soccerstats_build --owner=soccerstats --username=soccerstats
+createdb soccerstats_backup --owner=soccerstats --username=soccerstats
+createdb soccerstats --owner=soccerstats --username=soccerstats
+createdb soccerstats_dev --owner=soccerstats --username=soccerstats
 python3 manage.py migrate --noinput --settings=build_settings
 python3 build/load.py 1
 #python3 build/load.py 2
